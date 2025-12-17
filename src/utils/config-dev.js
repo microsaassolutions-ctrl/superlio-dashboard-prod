@@ -1,0 +1,13 @@
+export const apiURL = "https://apidev.superlio.ai";
+export const dashboardUrl = "https://dashboarddev.superlio.ai"
+export const extensionId = "bmaobmmbobbmddkdjilonehnhopdgbkj";
+export const redirectionUrl = "https://dev.superlio.ai/";
+export const extensionUrl = "https://dev.superlio.ai/prompts/";
+export const subscriptionUrl = "https://dev.superlio.ai/subscription/";
+export const settingsUrl = "https://dev.superlio.ai/settings/";
+export const joinFacebookUrl = "https://www.facebook.com/groups/279016861257680/";
+export const newFeaturesUrl = "https://dream100ai.canny.io/dream100";
+export const contactSupportUrl = "https://wa.me/916364222233";
+export const logoutUrl = "https://dev.superlio.ai/logout/";
+export const extensionDownloadUrl = "https://chrome.google.com/webstore/detail/dream100ai/bmaobmmbobbmddkdjilonehnhopdgbkj";
+export const extensionImageUrl = "https://dev.superlio.ai/wp-content/themes/audditio/assets/frontend/images/crome-extention-logo.png";

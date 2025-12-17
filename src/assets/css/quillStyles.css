@@ -1,0 +1,982 @@
+#editorQuill {
+  font-weight: normal;
+}
+
+.quill.custom-quill {
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom-quill>.ql-toolbar.ql-snow {
+  width: -webkit-fill-available;
+  padding: 0px 5px 5px !important;
+  /* position: sticky; */
+  top: 0;
+  background: #fff;
+  /* z-index: 1; */
+}
+
+.custom-quill>.ql-toolbar button {
+  width: 18px;
+  height: 20px;
+  padding: 1px 2px !important;
+}
+
+.custom-quill>.ql-font.ql-picker .ql-picker-label {
+  width: 65px;
+  padding: 0px 0px;
+}
+
+.ql-snow .ql-picker-label {
+  padding-left: 2px;
+}
+
+.QuillTitle .quill-font-size {
+  display: contents;
+}
+
+.quill-font-size select {
+  font-size: 14px;
+}
+
+.ql-toolbar.ql-snow+.ql-container.ql-snow {
+  width: -webkit-fill-available;
+  border-top: 0;
+  overflow: auto;
+  max-height: calc(256px - 27px);
+}
+
+.QuillTitle .ql-toolbar.ql-snow+.ql-container.ql-snow {
+  border-top: 0;
+  overflow: auto;
+  height: 140px;
+  max-height: calc(140px - 27px) !important;
+}
+
+.QuillContent .ql-toolbar.ql-snow+.ql-container.ql-snow {
+  border-top: 0;
+  overflow: auto;
+  height: 140px;
+  max-height: calc(140px - 27px) !important;
+}
+
+.custom-quill .ql-toolbar.ql-snow .ql-formats {
+  margin-right: 3px;
+}
+
+.ql-toolbar button {
+  color: white;
+}
+
+.ql-editor {
+  overflow-y: auto;
+}
+
+/* Customize the selected text */
+.ql-editor ::selection {
+  /* background-color: rgba(255, 165, 0, 0.5); */
+}
+
+.ql-snow .ql-picker.ql-font {
+  max-width: 80px;
+  min-width: fit-content;
+}
+
+.ql-toolbar .ql-font .ql-picker-label[data-value]::before {
+  content: attr(data-value);
+  text-transform: capitalize;
+  width: 58px;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ql-toolbar.ql-snow .ql-picker.ql-expanded .ql-picker-options {
+  border-color: #ccc;
+  height: 100px;
+  overflow-y: auto;
+}
+
+/* Selected font display in toolbar */
+.ql-toolbar .ql-font .ql-picker-label[data-value]::before {
+  content: attr(data-value);
+  text-transform: capitalize;
+}
+
+/* Selected font display in toolbar */
+.ql-toolbar .ql-font .ql-picker-item[data-value]::before {
+  content: attr(data-value);
+  text-transform: capitalize;
+  font-family: attr(data-value);
+}
+
+/* Preview the actual font in dropdown */
+/* .ql-toolbar .ql-font .ql-picker-item {
+  font-family: inherit;
+} */
+.ql-snow .ql-picker.ql-size .ql-picker-label::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item::before {
+  content: attr(data-value);
+}
+/* .ql-snow .ql-picker.ql-size{
+  border: 1px solid #ccc;
+} */
+
+/*  */
+.ql-editor p, 
+.ql-editor h1, 
+.ql-editor h2, 
+.ql-editor h3, 
+.ql-editor h4, 
+.ql-editor h5, 
+.ql-editor h6, 
+.ql-editor span {
+  /* line-height: 1 !important; */
+  height: auto !important; 
+  margin: 0;
+  padding: 0; 
+}
+div.mainContents div p.mainContentTitle > p,
+div.mainContents div p.mainContentText > p{
+  font-family: 'A Day without Sun text', cursive;
+}
+
+div.mainContents div p.mainContentTitle > p * {
+  line-height: 1.1 !important;
+}
+
+div.mainContents div p.mainContentText > p * {
+  line-height: 1 !important;
+}
+/* .publish-preview-page p.mainContentTitle,.publish-preview-page div.mainContents p.mainContentText{
+  line-height: 0 !important;
+} */
+
+/* ==================== */
+/* FONT FAMILY CLASSES  */
+/* ==================== */
+/* Antonio */
+@font-face {
+  font-family: 'Antonio';
+  src: url('../../../public/assets/fonts/antonio/Antonio-Regular.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-antonio { font-family: 'Antonio', sans-serif; }
+
+/* Norwester */
+@font-face {
+  font-family: 'Norwester';
+  src: url('../../../public/assets/fonts/norwester/norwester.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-norwester { font-family: 'Norwester', sans-serif; }
+
+/* Playfair Display */
+@font-face {
+  font-family: 'Playfair Display';
+  src: url('../../../public/assets/fonts/playfair-display/PlayfairDisplay-Regular.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-playfair-display { font-family: 'Playfair Display', serif; }
+
+/* League Spartan */
+@font-face {
+  font-family: 'League Spartan';
+  src: url('../../../public/assets/fonts/league-spartan/LeagueSpartan-Bold.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-league-spartan { font-family: 'League Spartan', sans-serif; }
+
+/* League Gothic */
+@font-face {
+  font-family: 'League Gothic';
+  src: url('../../../public/assets/fonts/League-Gothic/LeagueGothic-CondensedRegular.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-league-gothic { font-family: 'League Gothic', sans-serif; }
+
+/* Cinzel */
+@font-face {
+  font-family: 'Cinzel';
+  src: url('../../../public/assets/fonts/cinzel/CinzelDecorative-Regular.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-cinzel { font-family: 'Cinzel', serif; }
+
+/* Oswald */
+@font-face {
+  font-family: 'Oswald';
+  src: url('../../../public/assets/fonts/oswald/Oswald-Regular.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-oswald { font-family: 'Oswald', sans-serif; }
+
+/* Anton */
+@font-face {
+  font-family: 'Anton';
+  src: url('../../../public/assets/fonts/Anton/Anton-Regular.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-anton { font-family: 'Anton', sans-serif; }
+
+/* Merriweather */
+@font-face {
+  font-family: 'Merriweather';
+  src: url('../../../public/assets/fonts/merriweather/Merriweather-Regular.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-merriweather { font-family: 'Merriweather', serif; }
+
+/* Lato Bold*/
+@font-face {
+  font-family: 'Lato Bold';
+  src: url('../../../public/assets/fonts/lato/Lato-Bold.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-lato-bold { font-family: 'Lato Bold', sans-serif; font-weight: bold; }
+
+
+
+/* Roboto Slab */
+@font-face {
+  font-family: 'Roboto Slab';
+  src: url('../../../public/assets/fonts/roboto-slab/RobotoSlab-Regular.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-roboto-slab { font-family: 'Roboto Slab', serif; }
+
+/* Lora */
+@font-face {
+  font-family: 'Lora';
+  src: url('../../../public/assets/fonts/lora/Lora-Regular.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-lora { font-family: 'Lora', serif; }
+
+/* Onest */
+@font-face {
+  font-family: 'Onest';
+  src: url('../../../public/assets/fonts/Onest/Onest-VariableFont_wght.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-onest { font-family: 'Onest', sans-serif; }
+
+/* Urbanist */
+@font-face {
+  font-family: 'Urbanist';
+  src: url('../../../public/assets/fonts/Urbanist/Urbanist-VariableFont_wght.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-urbanist { font-family: 'Urbanist', sans-serif; }
+
+
+/* Inter */
+@font-face {
+  font-family: 'Inter';
+  src: url('../../../public/assets/fonts/Inter/Inter-VariableFont_opsz\,wght.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-inter { font-family: 'Inter', sans-serif; }
+
+/* Poppins */
+@font-face {
+  font-family: 'Poppins';
+  src: url('../../../public/assets/fonts/poppins/Poppins-Regular.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-poppins { font-family: 'Poppins', sans-serif; }
+
+/* DM Sans */
+@font-face {
+  font-family: 'DM Sans';
+  src: url('../../../public/assets/fonts/DM-Sans/DMSans-VariableFont_opsz\,wght.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-dm-sans { font-family: 'DM Sans', sans-serif; }
+
+/* Lexend */
+@font-face {
+  font-family: 'Lexend';
+  src: url('../../../public/assets/fonts/Lexend/Lexend-VariableFont_wght.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-lexend { font-family: 'Lexend', sans-serif; }
+
+/* Raleway */
+@font-face {
+  font-family: 'Raleway';
+  src: url('../../../public/assets/fonts/Raleway/Raleway-VariableFont_wght.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-raleway { font-family: 'Raleway', sans-serif; }
+
+/* Rosario */
+@font-face {
+  font-family: 'Rosario';
+  src: url('../../../public/assets/fonts/Rosario/Rosario-VariableFont_wght.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-rosario { font-family: 'Rosario', sans-serif; }
+
+/* Passion One */
+@font-face {
+  font-family: 'Passion One';
+  src: url('../../../public/assets/fonts/Passion-One/PassionOne-Regular.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-passion-one { font-family: 'Passion One', sans-serif; }
+
+
+/* Archivo Black */
+@font-face {
+  font-family: 'Archivo Black';
+  src: url('../../../public/assets/fonts/Archivo-Black/ArchivoBlack-Regular.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-archivo-black { font-family: 'Archivo Black', sans-serif; }
+
+/* Helvetica World */
+@font-face {
+  font-family: 'Helvetica World';
+  src: url('../../../public/assets/fonts/helvetica-world-regular/helvetica-world-regular.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-helvetica-world { font-family: 'Helvetica World', sans-serif; }
+
+/* DM-Serif-Display */
+@font-face {
+  font-family: 'DM-Serif-Display';
+  src: url('../../../public/assets/fonts/DM-Serif-Display/DMSerifDisplay-Regular.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-dm-serif-display { font-family: 'DM Serif Display', serif; }
+
+/* Noto Serif Display */
+@font-face {
+  font-family: 'Noto Serif Display';
+  src: url('../../../public/assets/fonts/Noto-Serif-Display/NotoSerifDisplay-VariableFont_wdth\,wght.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-noto-serif-display { font-family: 'Noto Serif Display', serif; }
+
+/* TT Marxiana Antigua */
+@font-face {
+  font-family: 'TT Marxiana Antigua';
+  src: url('../../../public/assets/fonts/tt_marxiana_antiqua/TT\ Marxiana\ Trial\ Antiqua.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-tt-marxiana-antigua { font-family: 'TT Marxiana Antigua', serif; }
+
+/* Cooper Hewitt */
+@font-face {
+  font-family: 'Cooper Hewitt';
+  src: url('../../../public/assets/fonts/cooper-hewitt/CooperHewitt-Bold.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-cooper-hewitt { font-family: 'Cooper Hewitt', serif; }
+
+/* TT Knickerbockers */
+@font-face {
+  font-family: 'TT Knickerbockers';
+  src: url('../../../public/assets/fonts/tt-knickerbockers/TTKnickerbockers-Script.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-tt-knickerbockers { font-family: 'TT Knickerbockers', serif; }
+
+/* TAN Harmoni */
+@font-face {
+  font-family: 'TAN Harmoni';
+  src: url('../../../public/assets/fonts/TAN-Harmoni/Harmoni.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-tan-harmoni { font-family: 'TAN Harmoni', serif; }
+
+
+/* Satoshi */
+@font-face {
+  font-family: 'Satoshi';
+  src: url('../../../public/assets/fonts/satoshi/Satoshi-Regular.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-satoshi { font-family: 'Satoshi', sans-serif; }
+
+/* Libre Baskerville */
+@font-face {
+  font-family: 'Libre Baskerville';
+  src: url('../../../public/assets/fonts/Libre-Baskerville/LibreBaskerville-Regular.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-libre-baskerville { font-family: 'Libre Baskerville', serif; }
+
+/* Roboto */
+@font-face {
+  font-family: 'Roboto';
+  src: url('../../../public/assets/fonts/Roboto/Roboto-VariableFont_wdth\,wght.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-roboto { font-family: 'Roboto', sans-serif; }
+
+/* Montserrat */
+@font-face {
+  font-family: 'Montserrat';
+  src: url('../../../public/assets/fonts/Montserrat/Montserrat-VariableFont_wght.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-montserrat { font-family: 'Montserrat', sans-serif; }
+
+/* Montserrat Bold*/
+@font-face {
+  font-family: 'Montserrat Bold';
+  src: url('../../../public/assets/fonts/Montserrat/Montserrat-Bold.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-montserrat-bold { font-family: 'Montserrat Bold', sans-serif; font-weight: bold; }
+
+/* Kollektif*/
+@font-face {
+  font-family: 'Kollektif';
+  src: url('../../../public/assets/fonts/kollektif/Kollektif.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-kollektif { font-family: 'Kollektif', sans-serif; }
+
+/* Open Sans */
+@font-face {
+  font-family: 'Open Sans';
+  src: url('../../../public/assets/fonts/Open-Sans/OpenSans-VariableFont_wdth\,wght.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-open-sans { font-family: 'Open Sans', sans-serif; }
+
+/* EB Garamond */
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('../../../public/assets/fonts/eb-garamond/EBGaramond08-Regular.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-eb-garamond { font-family: 'EB Garamond', serif; }
+
+
+/* Fredoka */
+@font-face {
+  font-family: 'Fredoka';
+  src: url('../../../public/assets/fonts/fredoka/FredokaOne-Regular.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-fredoka { font-family: 'Fredoka', sans-serif; }
+
+/* Be Vietnam */
+@font-face {
+  font-family: 'Be Vietnam';
+  src: url('../../../public/assets/fonts/be-vietnam/BeVietnam-Regular.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-be-vietnam { font-family: 'Be Vietnam', sans-serif; }
+
+/* Aileron */
+@font-face {
+  font-family: 'Aileron';
+  src: url('../../../public/assets/fonts/aileron/Aileron-Regular.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-aileron { font-family: 'Aileron', sans-serif; }
+
+/* TT Hoves */
+@font-face {
+  font-family: 'TT Hoves';
+  src: url('../../../public/assets/fonts/tt-hoves/TTHoves-Regular.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-tt-hoves { font-family: 'TT Hoves', sans-serif; }
+
+/* Arimo */
+@font-face {
+  font-family: 'Arimo';
+  src: url('../../../public/assets/fonts/Arimo/Arimo-VariableFont_wght.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-arimo { font-family: 'Arimo', sans-serif; }
+
+
+/* Public Sans */
+@font-face {
+  font-family: 'Public Sans';
+  src: url('../../../public/assets/fonts/Public-Sans/PublicSans-VariableFont_wght.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-public-sans { font-family: 'Public Sans', sans-serif; }
+
+/* A Day without Sun text */
+@font-face {
+  font-family: 'A Day without Sun text';
+  src: url('../../../public/assets/fonts/Public-Sans/PublicSans-VariableFont_wght.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-a-day-without-sun-text { font-family: 'A Day without Sun text', cursive; }
+
+/* The Seasons */
+@font-face {
+  font-family: 'The Seasons';
+  src: url('../../../public/assets/fonts/the-seasons/Fontspring-DEMO-theseasons-reg.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-the-seasons { font-family: 'The Seasons', cursive; }
+
+/* Cormorant-Garamond */
+@font-face {
+  font-family: 'Cormorant-Garamond';
+  src: url('../../../public/assets/fonts/Cormorant-Garamond/CormorantGaramond-VariableFont_wght.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-public-sans { font-family: 'Cormorant-Garamond', sans-serif; }
+
+/* Arapey */
+@font-face {
+  font-family: 'Arapey';
+  src: url('../../../public/assets/fonts/Arapey/Arapey-Regular.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-arapey { font-family: 'Arapey', serif; }
+
+/* TT Drugs */
+@font-face {
+  font-family: 'TT Drugs';
+  src: url('../../../public/assets/fonts/tt_drugs/TT\ Drugs\ Trial\ Condensed\ Regular.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-tt-drugs { font-family: 'TT Drugs', sans-serif; }
+
+/* Belleza */
+@font-face {
+  font-family: 'Belleza';
+  src: url('../../../public/assets/fonts/Belleza/Belleza-Regular.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-belleza { font-family: 'Belleza', sans-serif; }
+
+/* Chewy */
+@font-face {
+  font-family: 'Chewy';
+  src: url('../../../public/assets/fonts/Chewy/Chewy-Regular.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-chewy { font-family: 'Chewy', cursive; }
+
+/* Glacial Indifference */
+@font-face {
+  font-family: 'Glacial Indifference';
+  src: url('../../../public/assets/fonts/glacial-indifference/GlacialIndifference-Regular.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-glacial-indifference { font-family: 'Glacial Indifference', sans-serif; }
+
+/*  */
+/* Roboto Condensed */
+@font-face {
+  font-family: 'Roboto Condensed';
+  src: url('../../../public/assets/fonts/Roboto-Condensed/RobotoCondensed-VariableFont_wght.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-glacial-indifference { font-family: 'Roboto Condensed', sans-serif; }
+
+/* BW Stretch */
+@font-face {
+  font-family: 'BW Stretch';
+  src: url('../../../public/assets/fonts/bw-stretch/BwStretchDEMO-Regular-BF65d570183855c.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-bw-stretch { font-family: 'BW Stretch', sans-serif; }
+
+/* Bebasneue Regular*/
+@font-face {
+  font-family: 'Bebasneue Regular';
+  src: url('../../../public/assets/fonts/Bebas-Neue/BebasNeue-Regular.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-bebasneue-ragular { font-family: 'Bebasneue Regular', sans-serif; }
+
+/* Biennale*/
+@font-face {
+  font-family: 'Biennale';
+  src: url('../../../public/assets/fonts/Biennale/Fontspring-biennale-regular.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-biennale { font-family: 'Biennale', sans-serif; }
+
+/* Schabo*/
+@font-face {
+  font-family: 'Schabo';
+  src: url('../../../public/assets/fonts/schabo/SCHABO-Condensed.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-schabo { font-family: 'Schabo', serif; }
+
+/* Tusker Grotesk*/
+@font-face {
+  font-family: 'Tusker Grotesk';
+  src: url('../../../public/assets/fonts/tusker-grotesk/TuskerGrotesk-6800Super.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-tusker-grotesk { font-family: 'Tusker Grotesk', sans-serif; }
+
+/* Fiorello CG*/
+@font-face {
+  font-family: 'Fiorello CG';
+  src: url('../../../public/assets/fonts/fiorello-cg-condensed-regular/fiorello-cg-condensed-regular.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-fiorello-cg { font-family: 'Fiorello CG', sans-serif; }
+
+/* Zuume Rough*/
+@font-face {
+  font-family: 'Zuume Rough';
+  src: url('../../../public/assets/fonts/Zuume-Rough/fontspring-demo-zuumerough-regular.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-zuume-rough { font-family: 'Zuume Rough', sans-serif; }
+
+/* Switzer*/
+@font-face {
+  font-family: 'Switzer';
+  src: url('../../../public/assets/fonts/Switzer/Switzer-Regular.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-switzer { font-family: 'Switzer', sans-serif; }
+
+/* Gilroy*/
+@font-face {
+  font-family: 'Gilroy';
+  src: url('../../../public/assets/fonts/gilroy/Gilroy-ExtraBold.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-gilroy { font-family: 'Gilroy', sans-serif; }
+
+/* SF Pro*/
+@font-face {
+  font-family: 'SF Pro';
+  src: url('../../../public/assets/fonts/sf-pro/SFPRODISPLAYREGULAR.OTF') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-sf-pro { font-family: 'SF Pro', sans-serif; }
+
+/* Morganite*/
+@font-face {
+  font-family: 'Morganite';
+  src: url('../../../public/assets/fonts/morganite/Morganite-Medium.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-morganite { font-family: 'Morganite', sans-serif; }
+
+/* Literaturnaya*/
+@font-face {
+  font-family: 'Literaturnaya';
+  src: url('../../../public/assets/fonts/literaturnaya/Literaturnaya\ Book.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-literaturnaya { font-family: 'Literaturnaya', serif; }
+
+/* Helvetica*/
+@font-face {
+  font-family: 'Helvetica';
+  src: url('../../../public/assets/fonts/helvetica/Helvetica.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-helvetica { font-family: 'Helvetica', sans-serif; }
+
+/* Product Sans*/
+@font-face {
+  font-family: 'Product Sans';
+  src: url('../../../public/assets/fonts/product-sans/Product\ Sans\ Regular.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-product-sans { font-family: 'Product Sans', sans-serif; }
+
+/* Arial Nova*/
+@font-face {
+  font-family: 'Arial Nova';
+  src: url('../../../public/assets/fonts/Arial-Nova/ArialNova.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-arial-nova { font-family: 'Arial Nova', sans-serif; }
+
+/* Lazydog*/
+@font-face {
+  font-family: 'Lazydog';
+  src: url('../../../public/assets/fonts/lazy-dog/lazy_dog.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-lazydog { font-family: 'Lazydog', sans-serif; }
+
+/* Gotham*/
+@font-face {
+  font-family: 'Gotham';
+  src: url('../../../public/assets/fonts/Gotham/Gotham-Light.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-gotham { font-family: 'Gotham', sans-serif; }
+
+/* Times New Roman*/
+@font-face {
+  font-family: 'Times New Roman';
+  src: url('../../../public/assets/fonts/times-new-roman/times.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-times-new-roman {
+  font-family: 'Times New Roman', Times, serif;
+}
+
+/* Open Sauce*/
+@font-face {
+  font-family: 'Open Sauce';
+  src: url('../../../public/assets/fonts/Open-Sauce-Fonts/OpenSauceOne-Regular.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-open-sauce { font-family: 'Open Sauce', sans-serif; }
+
+/* TT Ramillas*/
+@font-face {
+  font-family: 'TT Ramillas';
+  src: url('../../../public/assets/fonts/tt_ramillas/TT\ Ramillas\ Initials\ Trial\ Regular.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-tt-ramillas { font-family: 'TT Ramillas', serif; }
+
+/* Woodland*/
+@font-face {
+  font-family: 'Woodland';
+  src: url('../../../public/assets/fonts/Woodland/PPWoodland-Bold.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-woodland { font-family: 'Woodland', serif; }
+
+/* Garet*/
+@font-face {
+  font-family: 'Garet';
+  src: url('../../../public/assets/fonts//garet/Garet-Book.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-garet { font-family: 'Garet', sans-serif; }
+
+/* The Youngest Script*/
+@font-face {
+  font-family: 'The Youngest Script';
+  src: url('../../../public/assets/fonts/the-youngest-script/the-youngest-script.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-the-youngest-script { font-family: 'The Youngest Script', cursive; }
+
+/* Have Heart One*/
+@font-face {
+  font-family: 'Have Heart One';
+  src: url('../../../public/assets/fonts/have-heart-one/have-heart-one.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-have-heart-one { font-family: 'Have Heart One', cursive; }
+
+
+/* TC Milo*/
+@font-face {
+  font-family: 'TC Milo';
+  src: url('../../../public/assets/fonts/tc-milo/TcMiloRegular-0vj5r.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-tc-milo { font-family: 'TC Milo', sans-serif; }
+
+/* Arial */
+@font-face {
+  font-family: 'Arial';
+  src: url('../../../public/assets/fonts/arial/ARIAL.TTF') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-arial { font-family: Arial, sans-serif; }
+
+/* Agrandir */
+@font-face {
+  font-family: 'Agrandir';
+  src: url('../../../public/assets/fonts/agrandir/Agrandir-Regular.otf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-agrandir { font-family: 'Agrandir', sans-serif; }
+
+/* School Bell */
+@font-face {
+  font-family: 'School Bell';
+  src: url('../../../public/assets/fonts/Schoolbell/Schoolbell-Regular.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ql-font-schoolbell { font-family: 'School Bell', sans-serif; }
+
+/* SVG CSSS */
+.slide-preview-svg-content svg ,.theme-box-svg svg{
+  height: 100%;
+  width: 100%;
+}
+
+.box-component svg {
+  width: 100%;
+  height: 100%;
+}

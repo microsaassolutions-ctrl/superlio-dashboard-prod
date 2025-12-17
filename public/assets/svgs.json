@@ -1,0 +1,315 @@
+[
+  {
+    "name": "C-01",
+    "url": "/assets/svg/C-01",
+    "primary": "#3e3e3e",
+    "secondary": "#211f1f",
+    "tertiary": "#f51b00",
+    "background": "#222222"
+  },
+  {
+    "name": "C-02",
+    "url": "/assets/svg/C-02",
+    "primary": "#e04a1c",
+    "secondary": "#f7f2e6",
+    "tertiary": "#e23d0a",
+    "background": "#161b1d"
+  },
+  {
+    "name": "C-03",
+    "url": "/assets/svg/C-03",
+    "primary": "#ff3724",
+    "secondary": "#212d3b",
+    "tertiary": "#e84c3d",
+    "background": "#ffffff"
+  },
+  {
+    "name": "C-04",
+    "url": "/assets/svg/C-04",
+    "primary": "#ffffff",
+    "secondary": "#fffbfb",
+    "tertiary": "#e93b04",
+    "background": "#000000"
+  },
+  {
+    "name": "C-05",
+    "url": "/assets/svg/C-05",
+    "primary": "#de6129",
+    "secondary": "#000000",
+    "tertiary": "#e6ded3",
+    "background": "#ffffff"
+  },
+  {
+    "name": "C-06",
+    "url": "/assets/svg/C-06",
+    "primary": "#ffb22f",
+    "secondary": "#000000",
+    "tertiary": "#f8a517",
+    "background": "#ffffff"
+  },
+  {
+    "name": "C-07",
+    "url": "/assets/svg/C-07",
+    "primary": "#12232f",
+    "secondary": "#11899b",
+    "tertiary": "#1fbbd2",
+    "background": "#f3f6fa"
+  },
+  {
+    "name": "C-08",
+    "url": "/assets/svg/C-08",
+    "primary": "#854836",
+    "secondary": "#000000",
+    "tertiary": "#ffb22c",
+    "background": "#ffffff"
+  },
+  {
+    "name": "C-10",
+    "url": "/assets/svg/C-10",
+    "primary": "#fbe7e7",
+    "secondary": "#ffffff",
+    "tertiary": "#ff64ba",
+    "background": "#4c0033"
+  },
+  {
+	"name": "C-11",
+    "url": "/assets/svg/C-11",
+    "primary": "#cafc01",
+    "secondary": "#ffffff",
+    "tertiary": "#d1f931",
+    "background": "#151515"
+  },
+  {
+    "name": "C-12",
+    "url": "/assets/svg/C-12",
+    "primary": "#000000",
+    "secondary": "#1a1515",
+    "tertiary": "#ffffff",
+    "background": "#fd6f15"
+  },
+  {
+    "name": "C-13",
+    "url": "/assets/svg/C-13",
+    "primary": "#fff4e2",
+    "secondary": "#ffffff",
+    "tertiary": "#ffbd59",
+    "background": "#000000"
+  },
+  {
+    "name": "C-14",
+    "url": "/assets/svg/C-14",
+    "primary": "#fff8f1",
+    "secondary": "#fff8f1",
+    "tertiary": "#fff4e9",
+    "background": "#27221f"
+  },
+  {
+    "name": "C-15",
+    "url": "/assets/svg/C-15",
+    "primary": "#2060cd",
+    "secondary": "#1b1b1b",
+    "tertiary": "#cacaca",
+    "background": "#ffffff"
+  },
+  {
+    "name": "C-16",
+    "url": "/assets/svg/C-16",
+    "primary": "#251a21",
+    "secondary": "#2c1524",
+    "tertiary": "#010001",
+    "background": "#f4c307"
+  },
+  {
+    "name": "C-17",
+    "url": "/assets/svg/C-17",
+    "primary": "#ff3131",
+    "secondary": "#ffffff",
+    "tertiary": "#ffbd59",
+    "background": "#000000"
+  },
+  {
+    "name": "C-18",
+    "url": "/assets/svg/C-18",
+    "primary": "#ffd82b",
+    "secondary": "#ffffff",
+    "tertiary": "#f5d33d",
+    "background": "#000000"
+  },
+  {
+    "name": "C-19",
+    "url": "/assets/svg/C-19",
+    "primary": "#09fcd9",
+    "secondary": "#f3f6fa",
+    "tertiary": "#dadddf",
+    "background": "#2d3242"
+  },
+  {
+    "name": "C-20",
+    "url": "/assets/svg/C-20",
+    "primary": "#ffffff",
+    "secondary": "#e6aa89",
+    "tertiary": "#b7b6b6",
+    "background": "#000000"
+  },
+  {
+    "name": "C-21",
+    "url": "/assets/svg/C-21",
+    "primary": "#fff7f7",
+    "secondary": "#161b1d",
+    "tertiary": "#f7f2e6",
+    "background": "#e04a1c"
+  },
+  {
+    "name": "C-22",
+    "url": "/assets/svg/C-22",
+    "primary": "#ffffff",
+    "secondary": "#eee2e2",
+    "tertiary": "#f7b900",
+    "background": "#474343"
+  },
+  {
+    "name": "C-24",
+    "url": "/assets/svg/C-24",
+    "primary": "#0e0b0b",
+    "secondary": "#5b5b5b",
+    "tertiary": "#d5dd3f",
+    "background": "#fcfdee"
+  },
+  {
+    "name": "C-25",
+    "url": "/assets/svg/C-25",
+    "primary": "#ff914d",
+    "secondary": "#ffffff",
+    "tertiary": "#f07e37",
+    "background": "#000000"
+  },
+  {
+    "name": "C-26",
+    "url": "/assets/svg/C-26",
+    "primary": "#f81d16",
+    "secondary": "#ffffff",
+    "tertiary": "#f40202",
+    "background": "#0e0b0b"
+  },
+  {
+    "name": "C-27",
+    "url": "/assets/svg/C-27",
+    "primary": "#ff808b",
+    "secondary": "#ffffff",
+    "tertiary": "#ff808b",
+    "background": "#2f354a"
+  },
+  {
+    "name": "C-28",
+    "url": "/assets/svg/C-28",
+    "primary": "#f57b2f",
+    "secondary": "#ffffff",
+    "tertiary": "#ff914d",
+    "background": "#000000"
+  },
+  {
+    "name": "C-29",
+    "url": "/assets/svg/C-29",
+    "primary": "#f9a429",
+    "secondary": "#000000",
+    "tertiary": "#bd1d2d",
+    "background": "#fffff6"
+  },
+   {
+    "name": "C-32",
+    "url": "/assets/svg/C-32",
+    "primary": "#f47c00",
+    "secondary": "#f4f6ff",
+    "tertiary": "#de2a2a",
+    "background": "#110027"
+  },
+  {
+    "name": "C-33",
+    "url": "/assets/svg/C-33",
+    "primary": "#000000",
+    "secondary": "#757070",
+    "tertiary": "#070606",
+    "background": "#f4f2eb"
+  },
+  {
+    "name": "C-34",
+    "url": "/assets/svg/C-34",
+    "primary": "#ffffff",
+    "secondary": "#ffffff",
+    "tertiary": "#e5e1e1",
+    "background": "#007744"
+  },
+  {
+    "name": "C-35",
+    "url": "/assets/svg/C-35",
+    "primary": "#ecbced",
+    "secondary": "#292929",
+    "tertiary": "#111010",
+    "background": "#fff8f4"
+  },
+  {
+    "name": "C-36",
+    "url": "/assets/svg/C-36",
+    "primary": "#000000",
+    "secondary": "#0f0e0e",
+    "tertiary": "#bcbcbc",
+    "background": "#ffde59"
+  },
+  {
+    "name": "C-37",
+    "url": "/assets/svg/C-37",
+    "primary": "#ffffff",
+    "secondary": "#ffbd59",
+    "tertiary": "#e2e2e2",
+    "background": "#4b1662"
+  },
+  {
+    "name": "C-40",
+    "url": "/assets/svg/C-40",
+    "primary": "#ff7c27",
+    "secondary": "#ffffff",
+    "tertiary": "#07498b",
+    "background": "#011121"
+  },
+  {
+    "name": "C-42",
+    "url": "/assets/svg/C-42",
+    "primary": "#ec5000",
+    "secondary": "#ffffff",
+    "tertiary": "#f37737",
+    "background": "#131212"
+  },
+  {
+    "name": "C-44",
+    "url": "/assets/svg/C-44",
+    "primary": "#fff3f3",
+    "secondary": "#ffffff",
+    "tertiary": "#e3d6be",
+    "background": "#231f20"
+  },
+  {
+    "name": "C-45",
+    "url": "/assets/svg/C-45",
+    "primary": "#ffffff",
+    "secondary": "#8c52ff",
+    "tertiary": "#fac70f",
+    "background": "#292929"
+  },
+  {
+    "name": "C-46",
+    "url": "/assets/svg/C-46",
+    "primary": "#ffffff",
+    "secondary": "#e8ff8c",
+    "tertiary": "#ccf528",
+    "background": "#fffdfd"
+  },
+  {
+    "name": "C-49",
+    "url": "/assets/svg/C-49",
+    "primary": "#f94f06",
+    "secondary": "#ffffff",
+    "tertiary": "#f35f20",
+    "background": "#171717"
+  }
+ 
+]
