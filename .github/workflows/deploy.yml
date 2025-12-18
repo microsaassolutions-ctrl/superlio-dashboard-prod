@@ -20,7 +20,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /var/www/html/dashboarddev
+            cd /var/www/html/dashboard
             git pull origin main
             git reset --hard origin/main
             npm install
