@@ -35,3 +35,15 @@ export const deleteReq = async (endpoint, data, suppressErrors = false) => {
     throw error;
   }
 };
+
+export const put = async (endpoint, data, suppressErrors = false) => {
+  try {
+    const response = await axiosInstance.put(endpoint, data, { suppressErrors });
+    return response.data;
+  } catch (error) {
+    if (!suppressErrors) {
+      console.error("Error updating data:", error);
+    }
+    throw error;
+  }
+};
