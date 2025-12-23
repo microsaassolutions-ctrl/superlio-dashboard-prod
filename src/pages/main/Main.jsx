@@ -4,7 +4,8 @@ import { Input, Button, Loading } from "../../components/commons";
 import { useNavigate } from "react-router-dom";
 import { generateIcon } from "../../assets/images";
 import useMainStore from "../../store/useMainStore";
-import { errorToaster } from "../../utils/toaster";
+import { errorToaster, successToaster } from "../../utils/toaster";
+import { post } from "../../api/apiService";
 import ContentGeneration from "../../components/main/ContentGeneration";
 
 function Main() {
@@ -44,18 +45,52 @@ function Main() {
   }, [navigate]);
 
   // *******************
-    const [subscriptData, setSubscriptionData] = useState({});
-    useEffect(() => {
-      const fetchSubscription = async () => {
-        const res =  await getSubscription();
-        setSubscriptionData(res);
-      }
-      fetchSubscription();
-    }, []);
+  const [subscriptData, setSubscriptionData] = useState({});
+  useEffect(() => {
+    const fetchSubscription = async () => {
+      const res = await getSubscription();
+      setSubscriptionData(res);
+    }
+    fetchSubscription();
+  }, []);
   // *******************
 
   useEffect(() => {
     setTopic(data?.topic);
+
+    // Handle LinkedIn OAuth Callback - check for code and tab parameter first
+    const params = new URLSearchParams(window.location.search);
+    const linkedinCode = params.get('code');
+    const state = params.get('state');
+    const tabParam = params.get('tab');
+
+    if (linkedinCode && state) {
+      const exchangeLinkedInToken = async () => {
+        try {
+          const response = await post('/linkedin/callback', { code: linkedinCode });
+          if (response?.success) {
+            successToaster('LinkedIn connected successfully!');
+            // Set LinkedIn connected state in Zustand for immediate UI update
+            setData("linkedInConnected", true);
+            // If we came back from OAuth with tab=publish, set it
+            if (tabParam === 'publish') {
+              addValidTransition('publish');
+              setData("activeTab", "publish");
+            }
+            // Remove query params from URL to clean up
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        } catch (error) {
+          console.error("LinkedIn Callback Error:", error);
+          errorToaster('Failed to connect LinkedIn');
+        }
+      };
+      exchangeLinkedInToken();
+      // Skip the activeTab reset logic when handling OAuth callback
+      return;
+    }
+
+    // Only reset to 'post' if NOT coming from OAuth
     if (data.activeTab === "publish") {
       setData("activeTab", "post");
       setData("isGeneratingCarousel", false);
