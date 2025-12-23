@@ -121,28 +121,63 @@ const UploadMediaModal = ({ onClose, onProceed }) => {
         setIsDragging(false);
     };
 
+    const [isProcessing, setIsProcessing] = useState(false);
+
     const handleProceed = async () => {
         if (!selectedFile) {
             setError("Please select a file first.");
             return;
         }
 
-        // Convert to base64 and call onProceed
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const fileData = {
-                filename: selectedFile.name,
-                type: selectedFile.type,
-                size: selectedFile.size,
-                mediaType: selectedType,
-                base64: e.target.result,
-            };
-            console.log("📤 Upload Media - File Data:", fileData);
-            if (onProceed) {
-                onProceed(fileData);
+        setIsProcessing(true);
+        setError("");
+
+        try {
+            // For images and documents, we already have base64 from preview
+            if ((selectedType === "image" || selectedType === "document") && preview) {
+                const fileData = {
+                    filename: selectedFile.name,
+                    type: selectedFile.type,
+                    size: selectedFile.size,
+                    mediaType: selectedType,
+                    base64: preview,
+                };
+                console.log("📤 Upload Media - Using cached preview, size:", (preview.length / 1024 / 1024).toFixed(2), "MB");
+                if (onProceed) {
+                    onProceed(fileData);
+                }
+                return;
             }
-        };
-        reader.readAsDataURL(selectedFile);
+
+            // For video or if preview not available, read file fresh
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                const fileData = {
+                    filename: selectedFile.name,
+                    type: selectedFile.type,
+                    size: selectedFile.size,
+                    mediaType: selectedType,
+                    base64: e.target.result,
+                };
+                console.log("📤 Upload Media - File converted, size:", (e.target.result.length / 1024 / 1024).toFixed(2), "MB");
+                setIsProcessing(false);
+                if (onProceed) {
+                    onProceed(fileData);
+                }
+            };
+
+            reader.onerror = () => {
+                setError("Failed to read file. Please try again.");
+                setIsProcessing(false);
+            };
+
+            reader.readAsDataURL(selectedFile);
+        } catch (err) {
+            console.error("Upload Media Error:", err);
+            setError("An error occurred. Please try again.");
+            setIsProcessing(false);
+        }
     };
 
     const formatFileSize = (bytes) => {
@@ -280,13 +315,13 @@ const UploadMediaModal = ({ onClose, onProceed }) => {
                     </button>
                     <button
                         onClick={handleProceed}
-                        disabled={!selectedFile}
-                        className={`px-8 py-2 rounded-md font-bold transition shadow-md ${selectedFile
+                        disabled={!selectedFile || isProcessing}
+                        className={`px-8 py-2 rounded-md font-bold transition shadow-md ${selectedFile && !isProcessing
                             ? "bg-[#8B5CF6] text-white hover:bg-[#7C3AED]"
                             : "bg-gray-200 text-gray-400 cursor-not-allowed"
                             }`}
                     >
-                        Proceed
+                        {isProcessing ? "Processing..." : "Proceed"}
                     </button>
                 </div>
             </div>
