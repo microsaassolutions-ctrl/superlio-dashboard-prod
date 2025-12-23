@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ImageComponent from "../commons/Image";
-import { Button, Loading, RegenerationReason } from "../commons";
+import { Button, Loading, RegenerationReason, UploadMediaModal } from "../commons";
 import {
   editIcon,
   globeIcon,
@@ -11,10 +11,13 @@ import {
 } from "../../assets/images";
 import useMainStore from "../../store/useMainStore";
 import { errorToaster } from "../../utils/toaster";
+import { get } from "../../api/apiService";
 import { blockClipboardActions, regenSuggestions } from "../../utils/helpers";
 
 function PostGenerator({ errorMessage, setGenerating, generating }) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isProceedHovered, setIsProceedHovered] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
   // const [typedPost, setTypedPost] = useState("");
@@ -54,6 +57,13 @@ function PostGenerator({ errorMessage, setGenerating, generating }) {
   useEffect(() => {
     const blockCopyAction = blockClipboardActions(contentRef.current);
     return blockCopyAction;
+  }, []);
+
+  // Reset carousel generation state when user returns to PostGenerator
+  // This allows users to re-select options even if previous carousel generation failed
+  useEffect(() => {
+    setData("isGeneratingCarousel", false);
+    setData("requesting.carousel", false);
   }, []);
 
   useEffect(() => {
@@ -143,6 +153,15 @@ function PostGenerator({ errorMessage, setGenerating, generating }) {
         };
         try {
           setData("requesting.post", true);
+
+          // Pre-fetch LinkedIn status in parallel (for smooth Publish page load)
+          get('/linkedin/status', { suppressErrors: true }).then(response => {
+            const isConnected = response?.connected && !response?.expired;
+            setData("linkedInConnected", isConnected);
+          }).catch(() => {
+            // Silently fail - will be checked again on Publish page if needed
+          });
+
           const result = await fetchPostData(payload);
           navigate(".", {
             state: { ...state, autoGenerate: false, replace: true },
@@ -382,19 +401,77 @@ function PostGenerator({ errorMessage, setGenerating, generating }) {
             >
               Proceed
             </Button>
-          )
-            : (<Button
-              type="custom"
-              onClick={() => handleProceedClick("carousel")}
-              className={`p-3 my-1 rounded bg-primary-color text-white font-bold ${buttonsDisabled ? "opacity-50 cursor-not-allowed" : ""
-                } hover:bg-[#8979FD] transition`}
-              disabled={buttonsDisabled || isGeneratingCarousel || typedPost?.length > 3000}
+          ) : (
+            <div
+              className="relative inline-block"
+              onMouseEnter={() => !buttonsDisabled && setIsProceedHovered(true)}
+              onMouseLeave={() => setIsProceedHovered(false)}
             >
-              Proceed
-            </Button>)
-          }
+              <Button
+                type="custom"
+                onClick={() => { }}
+                className={`p-3 my-1 rounded bg-primary-color text-white font-bold ${buttonsDisabled ? "opacity-50 cursor-not-allowed" : ""
+                  } hover:bg-[#8979FD] transition`}
+                disabled={buttonsDisabled || isGeneratingCarousel}
+              >
+                Proceed
+              </Button>
+              {isProceedHovered && !buttonsDisabled && (
+                <div className="absolute z-50 bottom-[50px] right-0 mt-2 px-3 py-3 w-[200px] bg-white text-gray-800 text-sm rounded-md shadow-[0px_0px_10px_rgba(0,0,0,0.3)]">
+                  <p
+                    className="font-semibold text-[14px] py-2 px-2 cursor-pointer rounded-md hover:bg-gray-100 transition"
+                    onClick={() => {
+                      setIsProceedHovered(false);
+                      handleProceedClick("carousel");
+                    }}
+                  >
+                    🎠 Generate Carousel
+                  </p>
+                  <p
+                    className="font-semibold text-[14px] py-2 px-2 cursor-pointer rounded-md hover:bg-gray-100 transition"
+                    onClick={() => {
+                      setIsProceedHovered(false);
+                      setShowUploadModal(true);
+                    }}
+                  >
+                    📤 Upload Media
+                  </p>
+                  <p
+                    className="font-semibold text-[14px] py-2 px-2 cursor-pointer rounded-md hover:bg-gray-100 transition text-gray-500"
+                    onClick={() => {
+                      setIsProceedHovered(false);
+                      // Clear any previously uploaded media
+                      setData("customMedia", null);
+                      // Set to post (text-only) and go directly to publish
+                      setData("whichToPost", "post");
+                      setData("activeTab", "publish");
+                    }}
+                  >
+                    ⏭️ Skip (Text Only)
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Upload Media Modal */}
+      {showUploadModal && (
+        <UploadMediaModal
+          onClose={() => setShowUploadModal(false)}
+          onProceed={(fileData) => {
+            // Store the uploaded media in global state
+            setData("customMedia", fileData);
+            // Set whichToPost to 'media' to indicate custom media upload
+            setData("whichToPost", "media");
+            // Navigate to publish
+            setData("activeTab", "publish");
+            // Close the modal
+            setShowUploadModal(false);
+          }}
+        />
+      )}
     </div>
   );
 }
