@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { produce } from "immer";
 import { errorToaster, successToaster } from "../utils/toaster";
-import { initialState ,carouselConfig} from "./storeConfig";
+import { initialState, carouselConfig } from "./storeConfig";
 import { deleteReq, get, post } from "../api/apiService";
 import { redirectionUrl } from "../utils/config";
 let lastPostFetchTime = 0;
@@ -39,8 +39,8 @@ const useMainStore = create(
           })
         ),
 
-        resetStoreFull : () =>{
-          set(
+      resetStoreFull: () => {
+        set(
           produce((state) => {
             // Reset everything except the `settings` properties you want to keep
             state.data = {
@@ -55,7 +55,8 @@ const useMainStore = create(
               theme: state.data.theme
             };
           })
-        )},
+        )
+      },
       /**
        * ✅ Reset store to initial state
        */
@@ -73,7 +74,7 @@ const useMainStore = create(
                 headshot: state.data.settings.headshot,
                 niche: state.data.settings.niche,
                 handle: state.data.settings.handle,
-                requireBranding:state.data.settings.requireBranding
+                requireBranding: state.data.settings.requireBranding
               },
               summary: state.data.summary,
               suggestions: state.data.suggestions,
@@ -130,8 +131,8 @@ const useMainStore = create(
                 0
               );
 
-              const newSlide = { 
-                ...carouselConfig, 
+              const newSlide = {
+                ...carouselConfig,
                 id: highestId,
                 title: `GROW YOUR LINKEDIN ${highestId}`,
                 text: "NEW SLIDE",
@@ -229,7 +230,7 @@ const useMainStore = create(
           produce((state) => {
             state.data.topic = topic;
           })
-      ),
+        ),
       /**
        * ✅ Fetch LinkedIn post data
        */
@@ -345,7 +346,7 @@ const useMainStore = create(
           const regenOpt = await getter().data.regenOptions;
           const user_id = settings?.id || 1;
           const thread_id = settings?.threadId || "";
-          const { topic, content, postType, reason} = data;
+          const { topic, content, postType, reason } = data;
           const now = new Date();
           const formattedDate = now.toISOString().split("T")[0];
           const formattedTime = now.toTimeString().split(" ")[0];
@@ -364,8 +365,8 @@ const useMainStore = create(
             post_date: formattedDate,
             post_time: formattedTime,
             post_type: postType,
-            hook : regenOpt.hook,
-            content_and_style : regenOpt.contentAndStyle
+            hook: regenOpt.hook,
+            content_and_style: regenOpt.contentAndStyle
           };
           const response = await post(
             "/content/re-generate-linkedinPost",
@@ -450,8 +451,8 @@ const useMainStore = create(
             post_type: postType,
             publish_type: publishType,
             linkedin_postid: shareUrn,
-            user_config : user_config,
-            user_fonts : user_fonts
+            user_config: user_config,
+            user_fonts: user_fonts
           };
           const response = await post("/content/save-data", requestData);
 
@@ -509,29 +510,37 @@ const useMainStore = create(
           };
 
           // Default properties to be added
-          const defaultProperties = {...carouselConfig};
+          const defaultProperties = { ...carouselConfig };
 
           const response = await post(
             "/content/generate-post-carousel",
             requestData
-          ); 
+          );
           if (response.success) {
             const fontData = response?.data?.user_fonts?.carousel;
-            // Map response to new structure
+            // Map response to new structure - create fresh copy for each slide
             const updatedCarousels = response?.data?.carousel.map((slide, i) => {
-              if (i == 0 || i === (response?.data?.carousel.length - 1)) {
-                defaultProperties.contentSetting = fontData?.[0]?.content ? fontData[0]?.content : defaultProperties?.contentSetting;
-                defaultProperties.titleSetting = fontData?.[0]?.title ? fontData[0]?.title : defaultProperties?.titleSetting;
-              } else {
-                defaultProperties.contentSetting = fontData?.[1]?.content ? fontData[1]?.content : defaultProperties?.contentSetting;
-                 defaultProperties.titleSetting = fontData?.[1]?.title ? fontData[1]?.title : defaultProperties?.titleSetting;
-              }
+              const isFirstOrLast = i === 0 || i === (response?.data?.carousel.length - 1);
+
+              // Create fresh properties for this slide (avoid mutating shared object)
+              const baseConfig = { ...carouselConfig };
+              const slideProperties = {
+                ...baseConfig,
+                contentSetting: isFirstOrLast
+                  ? (fontData?.[0]?.content || baseConfig.contentSetting)
+                  : (fontData?.[1]?.content || baseConfig.contentSetting),
+                titleSetting: isFirstOrLast
+                  ? (fontData?.[0]?.title || baseConfig.titleSetting)
+                  : (fontData?.[1]?.title || baseConfig.titleSetting),
+              };
+
               return ({
-              ...defaultProperties,
-              id: slide.id,
-              title: slide.heading.replace(/\n/g, "<br>"),
-              text: slide.content.replace(/\n/g, "<br>"),
-            })});
+                ...slideProperties,
+                id: slide.id,
+                title: slide.heading.replace(/\n/g, "<br>"),
+                text: slide.content.replace(/\n/g, "<br>"),
+              })
+            });
 
             if (updatedCarousels.length > 0) {
               // if (showSuccessMessage) successToaster(response?.message);
@@ -603,8 +612,8 @@ const useMainStore = create(
             post_date: formattedDate,
             post_time: formattedTime,
             post_type: postType,
-            hook : regenOpt.carouselHook,
-            content_and_style : regenOpt.carouselContentAndStyle
+            hook: regenOpt.carouselHook,
+            content_and_style: regenOpt.carouselContentAndStyle
           };
 
 
@@ -628,25 +637,33 @@ const useMainStore = create(
           //   }, 5000);
           // });
 
-          const defaultProperties = {...carouselConfig};
+          const defaultProperties = { ...carouselConfig };
 
           if (response?.success) {
             const fontData = response?.data?.user_fonts?.carousel;
-            // Map response to new structure
+            // Map response to new structure - create fresh copy for each slide
             const updatedCarousels = response?.data?.carousel.map((slide, i) => {
-              if (i == 0 || i === (response?.data?.carousel.length - 1)) {
-                defaultProperties.contentSetting = fontData?.[0]?.content ? fontData[0]?.content : defaultProperties?.contentSetting;
-                defaultProperties.titleSetting = fontData?.[0]?.title ? fontData[0]?.title : defaultProperties?.titleSetting;
-              } else {
-                defaultProperties.contentSetting = fontData?.[1]?.content ? fontData[1]?.content : defaultProperties?.contentSetting;
-                 defaultProperties.titleSetting = fontData?.[1]?.title ? fontData[1]?.title : defaultProperties?.titleSetting;
-              }
+              const isFirstOrLast = i === 0 || i === (response?.data?.carousel.length - 1);
+
+              // Create fresh properties for this slide (avoid mutating shared object)
+              const baseConfig = { ...carouselConfig };
+              const slideProperties = {
+                ...baseConfig,
+                contentSetting: isFirstOrLast
+                  ? (fontData?.[0]?.content || baseConfig.contentSetting)
+                  : (fontData?.[1]?.content || baseConfig.contentSetting),
+                titleSetting: isFirstOrLast
+                  ? (fontData?.[0]?.title || baseConfig.titleSetting)
+                  : (fontData?.[1]?.title || baseConfig.titleSetting),
+              };
+
               return ({
-              ...defaultProperties,
-              id: slide.id,
-              title: slide.heading.replace(/\n/g, "<br>"),
-              text: slide.content.replace(/\n/g, "<br>"),
-            })});
+                ...slideProperties,
+                id: slide.id,
+                title: slide.heading.replace(/\n/g, "<br>"),
+                text: slide.content.replace(/\n/g, "<br>"),
+              })
+            });
 
             if (updatedCarousels.length > 0) {
               // if (showSuccessMessage) successToaster(response?.message);
@@ -687,9 +704,9 @@ const useMainStore = create(
           const settings = await getter().data.settings;
 
           const user_id = settings?.id || 1;
-          let { up_coming = true ,to_date , from_date } = data;
-          if(to_date || from_date) { up_coming = false }
-          const response = await get(`/content/post-list`, {user_id, up_coming, to_date, from_date }, true);
+          let { up_coming = true, to_date, from_date } = data;
+          if (to_date || from_date) { up_coming = false }
+          const response = await get(`/content/post-list`, { user_id, up_coming, to_date, from_date }, true);
 
           if (response?.success) {
             // successToaster(response?.message);
@@ -757,7 +774,7 @@ const useMainStore = create(
                 state.data.settings.niche = niche;
                 state.data.settings.handle = handle;
                 state.data.isAnsweredQuestion = true;
-                if(theme){
+                if (theme) {
                   state.data.theme = {
                     colors: {
                       primary: theme?.themeColors?.primary,
@@ -841,7 +858,7 @@ const useMainStore = create(
           const res = await get("/content/subscription", null, true);
           if (res.data) {
             // const { id, name, headshot, email } = res.data;
-            const { require_branding, is_allow_content} = res.data;
+            const { require_branding, is_allow_content } = res.data;
             getter()?.setSettings({ requireBranding: require_branding.toLowerCase() === "yes" });
             res.data.is_allow_content = is_allow_content.toLowerCase() === "yes";
             res.data.require_branding = require_branding.toLowerCase() === "yes"
@@ -935,10 +952,10 @@ const useMainStore = create(
       checkPublishPosts: async (data) => {
         const { settings } = getter().data;
         const requestData = {
-          user_id : settings?.id,
-          schedule_date : data?.schedule_date
+          user_id: settings?.id,
+          schedule_date: data?.schedule_date
         }
-        const response = await post(`/content/check-publish-post`,requestData);
+        const response = await post(`/content/check-publish-post`, requestData);
         if (response) {
           return response?.data;
         } else {

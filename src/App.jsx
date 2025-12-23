@@ -7,6 +7,7 @@ import "./assets/css/quillStyles.css";
 
 import Layout from "./layout/Layout";
 import { ContentCreate, Main, Dashboard, Settings, Schedule } from "./pages";
+import MyPost from "./pages/main/MyPost";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Subscription from "./pages/subscription/Subscription";
 
@@ -60,6 +61,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Schedule />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="my-post"
+            element={
+              <ProtectedRoute>
+                <MyPost />
               </ProtectedRoute>
             }
           />

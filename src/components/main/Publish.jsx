@@ -7,7 +7,9 @@ import {
   ImageCarousel,
   Overlay,
   ScheduleCard,
+  PdfPreview,
 } from "../commons";
+import { deleteReq, get, post } from "../../api/apiService";
 import {
   globeIcon,
   linkedInIcon,
@@ -24,11 +26,15 @@ import { useNavigate } from "react-router-dom";
 import { errorToaster, successToaster } from "../../utils/toaster";
 import ShowMoreText from "react-show-more-text";
 import { exportCarouselToPDF, fileToBase64 } from "../../utils/generatePdf";
-import { extensionDownloadUrl, extensionId, extensionImageUrl } from "../../utils/config";
-import { checkExtensionInstalled, showMessagesSequentially } from "../../utils/helpers";
+// DEPRECATED: Extension imports removed - now using API OAuth
+// import { extensionDownloadUrl, extensionId, extensionImageUrl } from "../../utils/config";
+import { apiURL } from "../../utils/config";
+import { showMessagesSequentially } from "../../utils/helpers";
 import { AiOutlineClose } from "react-icons/ai";
+import { FaImage, FaVideo, FaFilePdf } from "react-icons/fa";
 import domtoimage from "dom-to-image";
 import PostLoader from "../commons/PostLoader";
+import { startBackgroundUpload, setupUploadWarning } from "../../utils/uploadManager";
 
 const Publish = ({ subscriptData }) => {
   const [openPostScheduleCard, setOpenPostScheduleCard] = useState(false);
@@ -44,6 +50,7 @@ const Publish = ({ subscriptData }) => {
   const [, setUploadedCarousel] = useState(null);
   const [loadingMsg, setLoadingMsg] = useState({ message: "Please wait", progress: 0 });
   const [inProccedPost, setInProccesPost] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
   const navigate = useNavigate();
   const { data, setData, publishPost, checkPublishPosts, deletePost } = useMainStore();
   const userEmail = data?.settings && data?.settings?.email;
@@ -59,6 +66,7 @@ const Publish = ({ subscriptData }) => {
   }, [subscriptData]);
 
   const carousels = useMainStore((state) => state?.data?.carousels);
+  const customMedia = useMainStore((state) => state?.data?.customMedia);
   const visibleCarousels = carousels?.length && carousels?.filter((items) => !items?.invisible);
   useEffect(() => {
     setData("activeTab", "publish");
@@ -149,11 +157,54 @@ const Publish = ({ subscriptData }) => {
     return () => window.removeEventListener("message", handlePostComplete);
   }, [postPayload, publishType]);
 
+  // Helper function to convert an image URL to base64 via backend proxy (for CORS bypass)
+  const imgToBase64ViaProxy = async (imgUrl) => {
+    try {
+      // Use API proxy to fetch external images (bypasses CORS)
+      const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const proxyUrl = isLocalDev
+        ? `http://127.0.0.1:3001/content/proxy-image?url=${encodeURIComponent(imgUrl)}`
+        : `${apiURL}/content/proxy-image?url=${encodeURIComponent(imgUrl)}`;
+
+      // Note: Don't use credentials: 'include' as it breaks CORS with wildcard origin
+      const response = await fetch(proxyUrl);
+      const data = await response.json();
+
+      if (data.success && data.data) {
+        return data.data;
+      }
+      throw new Error('Proxy failed');
+    } catch (error) {
+      console.warn(`Could not convert image: ${imgUrl}`, error);
+      return imgUrl; // Fallback to original
+    }
+  };
+
+  // Helper function to convert all external images in an element to base64
+  const convertExternalImages = async (element) => {
+    const images = element.querySelectorAll('img');
+    for (const img of images) {
+      const src = img.getAttribute('src');
+      // Check if it's an external URL (not local or already base64)
+      if (src && !src.startsWith('data:') && !src.startsWith('/') && !src.startsWith('blob:') && !src.startsWith('http://localhost')) {
+        try {
+          const base64 = await imgToBase64ViaProxy(src);
+          img.setAttribute('src', base64);
+        } catch (err) {
+          console.warn(`Could not convert image: ${src}`, err);
+        }
+      }
+    }
+  };
+
   const generateImages = async () => {
     const slides = document.querySelectorAll('.slick-slider.slick-initialized .slick-slide:not(.slick-cloned)');
 
     const promises = Array.from(slides).map(async (slide, index) => {
       try {
+        // Convert external images to base64 before capture
+        await convertExternalImages(slide);
+
         const width = 1080;
         const height = 1350;
         const scale = (width / slide.offsetWidth);
@@ -166,7 +217,8 @@ const Publish = ({ subscriptData }) => {
             transformOrigin: 'top left',
             width: `${slide.offsetWidth}px`,
             height: `${slide.offsetHeight}px`
-          }
+          },
+          cacheBust: true // Force fresh fetch of resources
         });
 
         const blob = await (await fetch(dataUrl)).blob();
@@ -204,12 +256,342 @@ const Publish = ({ subscriptData }) => {
   const mediaGeneratedRef = useRef(false);
   const generatedMediaRef = useRef(null);
 
+  // Subscribe to Zustand linkedInConnected state (persisted in localStorage)
+  // This gives us instant UI without waiting for API call
+  const linkedInConnectedFromStore = useMainStore((state) => state.data.linkedInConnected);
+
+  // Use Zustand cached value as the source of truth for UI
+  const isLinkedInConnected = linkedInConnectedFromStore;
+
+  useEffect(() => {
+    // Verify LinkedIn status in background and update store if changed
+    checkLinkedInStatus();
+  }, []);
+
+  const checkLinkedInStatus = async () => {
+    try {
+      const response = await get('/linkedin/status');
+      const isConnected = response?.connected && !response?.expired;
+      // Update Zustand store (persisted) so next page load is instant
+      setData("linkedInConnected", isConnected);
+    } catch (error) {
+      console.error("Error checking LinkedIn status:", error);
+      setData("linkedInConnected", false);
+    }
+  };
+
+  // Helper to generate filename from topic
+  const getCarouselFilename = () => {
+    const topic = data?.topic || "LinkedIn_Carousel";
+    // Sanitize: alphanumerics, spaces, hyphens, underscores only. Limit length.
+    const sanitized = topic.replace(/[^a-zA-Z0-9\s-_]/g, "").trim().replace(/\s+/g, "_").substring(0, 50);
+    return `${sanitized}.pdf`;
+  };
+
+  // Pre-generate carousel PDF in background when user enters publish page
+  const isPreGeneratingRef = useRef(false);
+  useEffect(() => {
+    const preGenerateCarousel = async () => {
+      // Only pre-generate if it's a carousel and not already generated
+      if (whichToPost !== "carousel" || mediaGeneratedRef.current) {
+        return;
+      }
+
+      // Wait for DOM to be ready (1 second delay for carousel to render)
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      isPreGeneratingRef.current = true;
+      console.log('[Carousel] Pre-generating PDF in background...');
+
+      try {
+        const images = await generateImages();
+        const filename = getCarouselFilename();
+        const file = await exportCarouselToPDF(images, filename);
+        const media = {
+          filename: file.name,
+          fileSize: file.size,
+          type: file.type,
+          base64: await fileToBase64(file),
+        };
+        generatedMediaRef.current = media;
+        mediaGeneratedRef.current = true;
+        console.log('[Carousel] Pre-generation complete! Ready for instant publish.');
+      } catch (error) {
+        console.error('[Carousel] Pre-generation failed:', error);
+        // Will retry at publish time
+      } finally {
+        isPreGeneratingRef.current = false;
+      }
+    };
+
+    preGenerateCarousel();
+  }, [whichToPost]);
+
+  const handleConnectLinkedIn = async () => {
+    try {
+      setLoading(true);
+      const response = await get('/linkedin/auth-url');
+      if (response?.url) {
+        window.location.href = response.url;
+      } else {
+        errorToaster("Failed to get LinkedIn authorization URL");
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("LinkedIn Auth Error:", error);
+      errorToaster("Failed to initiate LinkedIn connection");
+      setLoading(false);
+    }
+  };
+
+  const [isScheduling, setIsScheduling] = useState(false);
+
+  const handleApiPublish = async ({ schedule = false, selectedDate, selectedTime } = {}) => {
+    // Set loading state IMMEDIATELY on click - before any async work
+    if (schedule) {
+      setIsScheduling(true);
+    } else {
+      setLoading(true);
+    }
+
+    try {
+      console.time('[Publish] Total Duration');
+      console.time('[Publish] 1. Content Preparation');
+      // 1. Prepare Content
+      const content = data?.post?.text?.replace(/<br\s*\/?>/gi, "\n");
+      if (!content) {
+        errorToaster("Post content cannot be empty.");
+        if (schedule) setIsScheduling(false); else setLoading(false);
+        return;
+      }
+      console.timeEnd('[Publish] 1. Content Preparation');
+
+      // 2. Prepare Media (Reuse existing logic)
+      console.time('[Publish] 2. Media Preparation');
+      let media = null;
+      let images = null;
+
+      // Handle custom uploaded media
+      if (whichToPost === "media" && customMedia) {
+        media = {
+          filename: customMedia.filename,
+          fileSize: customMedia.size,
+          type: customMedia.type,
+          base64: customMedia.base64,
+        };
+      } else if (whichToPost === "carousel") {
+        // Check if pre-generation is in progress - wait for it
+        if (isPreGeneratingRef.current) {
+          if (!schedule) setLoadingMsg({ message: "Waiting for carousel preparation...", progress: 30 });
+          // Wait for pre-generation to complete (poll every 200ms, max 30 seconds)
+          let waitCount = 0;
+          while (isPreGeneratingRef.current && waitCount < 150) {
+            await new Promise(resolve => setTimeout(resolve, 200));
+            waitCount++;
+          }
+        }
+
+        // Use cached media if available
+        if (mediaGeneratedRef.current) {
+          media = generatedMediaRef.current;
+        } else {
+          // Pre-generation didn't complete or failed, generate now
+          try {
+            if (!schedule) setLoadingMsg({ message: "Generating carousel images...", progress: 20 });
+            images = await generateImages();
+
+            if (!schedule) setLoadingMsg({ message: "Converting to PDF...", progress: 50 });
+            const filename = getCarouselFilename();
+            const file = await exportCarouselToPDF(images, filename);
+
+            if (!schedule) setLoadingMsg({ message: "Preparing for upload...", progress: 70 });
+            media = {
+              filename: file.name,
+              fileSize: file.size,
+              type: file.type,
+              base64: await fileToBase64(file),
+            };
+            generatedMediaRef.current = media;
+            mediaGeneratedRef.current = true;
+          } catch (error) {
+            console.error('Carousel generation error:', error);
+            errorToaster("Failed to generate carousel media.");
+            if (schedule) setIsScheduling(false); else setLoading(false);
+            return;
+          }
+        }
+      }
+      console.timeEnd('[Publish] 2. Media Preparation');
+
+      // 3. Send to API - include user_config and user_fonts for font persistence
+      console.time('[Publish] 3. Payload & Validation');
+
+      // Build user_fonts from carousel slides to persist font choices
+      // carousel[0] = first/last slide fonts, carousel[1] = middle slide fonts
+      const carousels = data?.carousels || [];
+      const firstSlide = carousels[0];
+      const secondSlide = carousels[1]; // Use slide 2 fonts for middle slides
+      const userFonts = {
+        carousel: [
+          {
+            title: firstSlide?.titleSetting || { fontSize: "36px", fontFamily: 'poppins', fontFamilyClass: "ql-font-poppins" },
+            content: firstSlide?.contentSetting || { fontSize: "18px", fontFamily: 'inter', fontFamilyClass: "ql-font-inter" }
+          },
+          {
+            title: secondSlide?.titleSetting || { fontSize: "36px", fontFamily: 'poppins', fontFamilyClass: "ql-font-poppins" },
+            content: secondSlide?.contentSetting || { fontSize: "18px", fontFamily: 'inter', fontFamilyClass: "ql-font-inter" }
+          },
+        ]
+      };
+
+      let payload = {
+        content,
+        media,
+        user_config: {
+          theme: data?.theme?.background?.type,
+          themeColors: {
+            primary: data?.theme?.colors?.primary,
+            secondary: data?.theme?.colors?.secondary,
+            tertiary: data?.theme?.colors?.tertiary,
+            background: data?.theme?.colors?.background,
+          },
+        },
+        user_fonts: userFonts,
+      };
+
+      let endpoint = '/linkedin/publish';
+
+      if (schedule) {
+        if (!selectedDate || !selectedTime) {
+          errorToaster("Please select a date and time.");
+          setIsScheduling(false);
+          return;
+        }
+
+        // Combine date and time
+        const localDateTime = new Date(`${selectedDate}T${selectedTime}`);
+
+        // Validate future time (client-side check)
+        if (localDateTime <= new Date()) {
+          errorToaster("Scheduled time must be in the future.");
+          setIsScheduling(false);
+          return;
+        }
+
+        // Part 1.2 + 1.2a: Validate scheduled date is not beyond plan expiry (+1 day grace)
+        const planExpiryDate = new Date(subscriptData?.scheadule_date);
+        // Add 1-day grace period: allow scheduling up to end of expiry day
+        planExpiryDate.setDate(planExpiryDate.getDate() + 1);
+        planExpiryDate.setHours(23, 59, 59, 999); // End of grace day
+
+        if (localDateTime > planExpiryDate) {
+          const displayExpiry = new Date(subscriptData?.scheadule_date);
+          const formattedExpiry = displayExpiry.toLocaleDateString("en-US", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+          });
+          errorToaster(`You cannot schedule a post after your plan expires (${formattedExpiry}).`);
+          setIsScheduling(false);
+          return;
+        }
+
+        // Convert to UTC ISO string
+        const utcDateTime = localDateTime.toISOString();
+
+        payload.scheduled_at = utcDateTime;
+        endpoint = '/linkedin/schedule';
+      }
+
+      // Show sending message
+      console.timeEnd('[Publish] 3. Payload & Validation');
+      console.log('[Publish] Payload size:', JSON.stringify(payload).length, 'bytes');
+
+      // STEP 1: Pre-validate (quick check for limits, plan expiry)
+      console.time('[Publish] Pre-validate');
+      if (!schedule) setLoadingMsg({ message: "Checking limits...", progress: 85 });
+
+      try {
+        const validatePayload = {
+          type: schedule ? 'schedule' : 'publish',
+          scheduled_at: schedule ? payload.scheduled_at : undefined,
+        };
+        const validateResponse = await post('/linkedin/pre-validate', validatePayload);
+        console.timeEnd('[Publish] Pre-validate');
+
+        if (!validateResponse?.success) {
+          // Validation failed - show error on Publish page
+          errorToaster(validateResponse?.message || "Validation failed");
+          if (schedule) {
+            setIsScheduling(false);
+          } else {
+            setLoading(false);
+          }
+          return;
+        }
+      } catch (validateError) {
+        console.error('[Publish] Pre-validate error:', validateError);
+        errorToaster(validateError?.response?.data?.message || "Failed to validate. Please try again.");
+        if (schedule) {
+          setIsScheduling(false);
+        } else {
+          setLoading(false);
+        }
+        return;
+      }
+
+      // STEP 2: Validation passed - start background upload and navigate immediately
+      const localToken = localStorage.getItem("superlioAccessToken");
+
+      // Prepare post data for display in My Posts
+      const postData = {
+        content: content?.substring(0, 100) + (content?.length > 100 ? '...' : ''),
+        type: whichToPost === 'carousel' ? 'carousel' : (whichToPost === 'media' ? 'media' : 'text'),
+        mediaType: media?.type || null, // Actual MIME type (e.g., video/mp4, image/jpeg, application/pdf)
+        scheduled_at: schedule ? payload.scheduled_at : null,
+        isScheduled: schedule,
+      };
+
+      // Start background upload (fire-and-forget)
+      console.time('[Publish] 4. Background Upload Started');
+      startBackgroundUpload({
+        endpoint,
+        payload,
+        token: localToken,
+        postData,
+      });
+      console.timeEnd('[Publish] 4. Background Upload Started');
+      console.timeEnd('[Publish] Total Duration');
+
+      // Navigate immediately - user will see upload progress in My Posts
+      if (schedule) {
+        setIsScheduling(false);
+      } else {
+        setLoading(false);
+      }
+
+      successToaster(schedule ? "Scheduling post..." : "Uploading to LinkedIn...");
+      setOpenPostScheduleCard(false);
+      navigate("/my-post");
+
+    } catch (error) {
+      console.error("API Publish Error:", error);
+      errorToaster(error?.message || "Failed to process post");
+      if (schedule) {
+        setIsScheduling(false);
+      } else {
+        setLoading(false);
+        setLoadingMsg({ message: "Please wait", progress: 0 });
+      }
+    }
+  };
+
   const handlePublish = async ({
     selectedDate,
     selectedTime,
     schedule = false,
   } = {}) => {
-  
+
     try {
       setOpenPostScheduleCard(false);
       setLoading(true);
@@ -225,7 +607,7 @@ const Publish = ({ subscriptData }) => {
         setLoading(false);
         return;
       }
-      
+
       const currentType = schedule ? "schedule" : "instant";
       let specificDate = new Date();
       let year = specificDate.getFullYear();
@@ -249,7 +631,7 @@ const Publish = ({ subscriptData }) => {
       showMessagesSequentially(setLoadingMsg, { skipToMessageNumber: 0 });
       setOpenPostScheduleCard(false);
       let media = null;
-       let images = null;
+      let images = null;
       // Handle carousel media generation
       if (whichToPost === "carousel" && !mediaGeneratedRef.current) {
         try {
@@ -349,7 +731,7 @@ const Publish = ({ subscriptData }) => {
           );
         } catch (error) {
           // ######## check ##########
-          console.log('Publish Post :',error)
+          console.log('Publish Post :', error)
           errorToaster(error.message)
           // ######## check ##########
           setLoadingMsg({ message: "Please wait", progress: 0 });
@@ -417,7 +799,7 @@ const Publish = ({ subscriptData }) => {
           );
         } catch (error) {
           // ######## check ##########
-          console.log('Schedule Post :',error);
+          console.log('Schedule Post :', error);
           errorToaster(error.message);
           // ######## check ##########
           setLoading(false);
@@ -426,33 +808,25 @@ const Publish = ({ subscriptData }) => {
       }
     } catch (error) {
       // ######## check ##########
-      console.log('Handle publish :',error);
+      console.log('Handle publish :', error);
       // errorToaster(error.message);
       // ######## check ##########
       setLoading(false);
       setLoadingMsg({ message: "Please wait", progress: 0 });
     }
   };
-  // ################################
-  const downloadPdf = async () => {
-    let images = null;
-    images = await generateImages();
-    const file = await exportCarouselToPDF(
-      images,
-      "MyLinkedInCarousel.pdf"
-    );
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(file);
-    link.download = "MyLinkedInCarousel.pdf";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(link.href);
-  };
+
 
   return (
-    <div className="flex flex-col items-center justify-between w-[100%] h-auto min-h-[493px] bg-white rounded-lg shadow-custom mt-2 p-4 font-sans text-gray-800">
-      {loading && <PostLoader details={loadingMsg} />}
+    <div
+      className="flex flex-col items-center justify-between w-[100%] h-auto min-h-[493px] bg-white rounded-lg shadow-custom mt-2 p-4 font-sans text-gray-800"
+      style={{
+        opacity: isFadingOut ? 0 : 1,
+        transform: isFadingOut ? 'translateY(-10px)' : 'translateY(0)',
+        transition: 'opacity 0.3s ease-out, transform 0.3s ease-out'
+      }}
+    >
+      {/* PostLoader removed - using inline button loaders instead */}
       <div
         className={`flex flex-col justify-center w-full max-w-[750px] bg-white rounded-lg mt-4 p-4 font-sans text-gray-800 ${extensionNotActive ? "" : "border-1 border-[#959595]"} `}
         style={{
@@ -521,6 +895,50 @@ const Publish = ({ subscriptData }) => {
                     }}
                   />
                 </ShowMoreText>
+              ) : whichToPost === "media" && customMedia ? (
+                <>
+                  <div>
+                    <ShowMoreText
+                      lines={2}
+                      more="more"
+                      less="Show less"
+                      className="w-full"
+                      anchorClass="show-more-less-clickable cursor-pointer"
+                      onClick={(isExpanded) => {
+                      }}
+                      expanded={false}
+                      truncatedEndingComponent={"... "}
+                    >
+                      <p
+                        dangerouslySetInnerHTML={{
+                          __html: data?.post?.text?.replace(/\n/g, "<br>"),
+                        }}
+                      />
+                    </ShowMoreText>
+                  </div>
+                  {/* Custom Media Preview */}
+                  <div className="mt-4 border border-gray-200 rounded-lg overflow-hidden">
+                    {customMedia.mediaType === "image" ? (
+                      <img
+                        src={customMedia.base64}
+                        alt={customMedia.filename}
+                        className="w-full max-h-[400px] object-contain bg-gray-50"
+                      />
+                    ) : customMedia.mediaType === "video" ? (
+                      <video
+                        src={customMedia.base64}
+                        controls
+                        className="w-full max-h-[400px] object-contain bg-gray-900"
+                      />
+                    ) : customMedia.mediaType === "document" ? (
+                      <PdfPreview
+                        base64={customMedia.base64}
+                        filename={customMedia.filename}
+                        maxHeight={400}
+                      />
+                    ) : null}
+                  </div>
+                </>
               ) : (
                 <>
                   <div>
@@ -645,7 +1063,58 @@ const Publish = ({ subscriptData }) => {
       </div>
       {!extensionNotActive && (
         <div className="flex items-end justify-end w-full max-w-[750px] gap-4 mt-4">
-          <Button
+          {isLinkedInConnected === null ? (
+            // Loading state - show disabled buttons while checking LinkedIn status
+            <>
+              <Button
+                type="custom"
+                className={`p-3 my-1 rounded bg-gray-400 text-white font-bold transition min-w-[100px] cursor-wait`}
+                disabled={true}
+              >
+                <span className="animate-pulse">Checking...</span>
+              </Button>
+            </>
+          ) : isLinkedInConnected === false ? (
+            <Button
+              type="custom"
+              onClick={handleConnectLinkedIn}
+              className={`p-3 my-1 rounded bg-[#0A66C2] text-white font-bold hover:bg-[#004182] transition`}
+            >
+              Connect to LinkedIn
+            </Button>
+          ) : (
+            <>
+              <Button
+                type="custom"
+                onClick={() => handleApiPublish({ schedule: false })}
+                className={`p-3 my-1 rounded bg-primary-color text-white font-bold hover:bg-[#8979FD] transition min-w-[130px] flex items-center justify-center gap-2`}
+                disabled={isExpired || loading}
+              >
+                {loading && (
+                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                )}
+                {loading ? "Publishing..." : "Publish"}
+              </Button>
+              <Button
+                type="custom"
+                onClick={() => setOpenPostScheduleCard(true)}
+                className={`p-3 my-1 rounded bg-primary-color text-white font-bold hover:bg-[#8979FD] transition min-w-[130px] flex items-center justify-center gap-2`}
+                disabled={isExpired || isScheduling}
+              >
+                {isScheduling && (
+                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                )}
+                {isScheduling ? "Scheduling..." : "Schedule"}
+              </Button>
+            </>
+          )}
+          {/* <Button
             type="custom"
             onClick={handlePublish}
             className={`p-3 my-1 rounded bg-primary-color text-white font-bold hover:bg-[#8979FD] transition`}
@@ -660,20 +1129,14 @@ const Publish = ({ subscriptData }) => {
             disabled={isExpired}
           >
             Schedule
-          </Button>
-          {/* <Button
-            type="custom"
-            onClick={() => downloadPdf()}
-            className={`p-3 my-1 rounded bg-primary-color text-white font-bold`}
-          >
-            download
           </Button> */}
+
         </div>
       )}
 
       {openPostScheduleCard && (
         <Overlay onClose={() => setOpenPostScheduleCard(false)}>
-          <ScheduleCard handlePublish={handlePublish} subscriptData={subscriptData} />
+          <ScheduleCard handlePublish={handleApiPublish} subscriptData={subscriptData} onClose={() => setOpenPostScheduleCard(false)} loading={isScheduling} />
         </Overlay>
       )}
     </div>

@@ -17,7 +17,8 @@ import {
   subscriptionIcon,
   profile,
 } from "../../assets/images";
-import { FiMenu, FiX, FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { FiMenu, FiX, FiChevronDown, FiChevronUp, FiStar } from "react-icons/fi";
+import RatingModal from "./RatingModal";
 import useMainStore from "../../store/useMainStore";
 import Button from "./Button";
 import { logoutUrl, settingsUrl, subscriptionUrl } from "../../utils/config";
@@ -29,21 +30,22 @@ export default function Sidebars() {
   const [isHovered, setIsHovered] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showRatingModal, setShowRatingModal] = useState(false);
   const location = useLocation();
-  const {getSubscription} = useMainStore();
-  const [sidebarUrls, setSidebarUrls] = useState({facebook_url :"" ,feature_url :"", contact_url:""})
-  useEffect(()=>{
-    const fetchUrls =async()=>{
+  const { getSubscription } = useMainStore();
+  const [sidebarUrls, setSidebarUrls] = useState({ facebook_url: "", feature_url: "", contact_url: "" })
+  useEffect(() => {
+    const fetchUrls = async () => {
       const res = await getSubscription();
       if (res) {
-        let facebook_url  = res?.facebook_url ?? ""; 
+        let facebook_url = res?.facebook_url ?? "";
         let feature_url = res?.feature_url ?? "";
         let contact_url = res?.contact_url ?? ""
         setSidebarUrls({ facebook_url: facebook_url, feature_url: feature_url, contact_url: contact_url });
       }
     }
     fetchUrls();
-  },[])
+  }, [])
   const joinFacebookUrl = sidebarUrls?.facebook_url;
   const newFeaturesUrl = sidebarUrls?.feature_url;
   const contactSupportUrl = sidebarUrls?.contact_url;
@@ -57,7 +59,7 @@ export default function Sidebars() {
     { label: 'Log out', url: logoutUrl, icon: logoutIcon },
   ];
 
-  
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 640) {
@@ -111,7 +113,7 @@ export default function Sidebars() {
             // { to: "/", icon: dashboardIcon, label: "Dashboard" },
             { to: "/content-personalization", icon: personalisationIcon, label: "Content Personalization" },
             { to: "/content-generation", icon: contentCreateIcon, label: "Content Generation" },
-            { to: "/schedule", icon: schedulleIcon, label: "Schedule" },
+            { to: "/my-post", icon: schedulleIcon, label: "My Posts" },
           ].map((item) => (
             <li key={item.to} className="group">
               {item.isExternal ? (
@@ -145,6 +147,22 @@ export default function Sidebars() {
             </li>
           ))}
         </ul>
+
+        {/* Rate Us Button */}
+        <div className="px-2 mt-2">
+          <button
+            onClick={() => setShowRatingModal(true)}
+            className="flex items-center pl-6 pr-3 py-3 text-gray-700 hover:bg-gray-100 w-full rounded-lg transition-colors"
+          >
+            <FiStar className="w-5 h-5 min-w-[20px] mr-3 text-yellow-500" />
+            <span
+              className={`overflow-hidden text-sm whitespace-nowrap transition-all ${isHovered ? "duration-1000" : "duration-300"} transform
+                ${isHovered ? "opacity-100 translate-x-0 w-auto" : "opacity-0 -translate-x-5 w-0"}`}
+            >
+              Rate Us
+            </span>
+          </button>
+        </div>
 
         {/* Profile Section + Dropdown */}
         <div
@@ -182,14 +200,13 @@ export default function Sidebars() {
 
           {showProfileMenu && (
             <div className="absolute bottom-12 right-0 w-48 bg-white shadow-md border border-gray-200 rounded-md z-[1001]">
-              {buttonLinks.map(({ label, url, icon },index) => (
+              {buttonLinks.map(({ label, url, icon }, index) => (
                 <Button
                   key={label}
-                  onClick={() => label.toLowerCase() === 'log out' ? window.location.href = url : window.open(url, '_blank') }
+                  onClick={() => label.toLowerCase() === 'log out' ? window.location.href = url : window.open(url, '_blank')}
                   type="custom"
-                  className={`w-full text-left block !px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 ${
-                    index !== 0 ? 'mt-1' : ''
-                  }`}
+                  className={`w-full text-left block !px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 ${index !== 0 ? 'mt-1' : ''
+                    }`}
                   textClass="text-left"
                   iconPosition="left"
                   icon={<img src={icon} className="w-[17px] h-[17px] mx-auto mr-2" />}
@@ -202,6 +219,11 @@ export default function Sidebars() {
         </div>
 
       </nav >
+
+      {/* Rating Modal */}
+      {showRatingModal && (
+        <RatingModal onClose={() => setShowRatingModal(false)} />
+      )}
     </>
   );
 }
