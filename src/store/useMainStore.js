@@ -975,6 +975,15 @@ const useMainStore = create(
     {
       name: "main-store",
       getStorage: () => localStorage,
+      // Exclude customMedia from persistence to avoid localStorage quota errors
+      // Large base64 files can exceed the ~5-10MB localStorage limit
+      partialize: (state) => ({
+        ...state,
+        data: {
+          ...state.data,
+          customMedia: null, // Don't persist uploaded media
+        },
+      }),
     }
   )
 );
