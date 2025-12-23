@@ -21,8 +21,8 @@ export const initialState = {
     carousel: [],
     hook: null,
     contentAndStyle: null,
-    carouselHook:null,
-    carouselContentAndStyle:null
+    carouselHook: null,
+    carouselContentAndStyle: null
   },
   settings: {
     id: null,
@@ -39,9 +39,9 @@ export const initialState = {
   },
   theme: {
     colors: {
-      primary:"",
+      primary: "",
       secondary: "",
-      tertiary:  "",
+      tertiary: "",
       background: "",
     },
     background: {
@@ -57,10 +57,12 @@ export const initialState = {
     text: "",
   },
   carousels: [],
+  linkedInConnected: null, // null = unknown/loading, true = connected, false = not connected
+  customMedia: null,
   user_fonts: {
-    carousel :[
-      {title : {id: 1, fontSize: "36px", fontFamily: 'poppins', fontFamilyClass : "ql-font-poppins"}, content : {id: 1, fontSize: "18px", fontFamily: 'inter', fontFamilyClass : "ql-font-inter"}},
-      {title : {id: 2, fontSize: "36px", fontFamily: 'poppins', fontFamilyClass : "ql-font-poppins"}, content : {id: 2, fontSize: "18px", fontFamily: 'inter', fontFamilyClass : "ql-font-inter"}},
+    carousel: [
+      { title: { id: 1, fontSize: "36px", fontFamily: 'poppins', fontFamilyClass: "ql-font-poppins" }, content: { id: 1, fontSize: "18px", fontFamily: 'inter', fontFamilyClass: "ql-font-inter" } },
+      { title: { id: 2, fontSize: "36px", fontFamily: 'poppins', fontFamilyClass: "ql-font-poppins" }, content: { id: 2, fontSize: "18px", fontFamily: 'inter', fontFamilyClass: "ql-font-inter" } },
     ]
   }
 };
@@ -71,6 +73,6 @@ export const carouselConfig = {
   invisible: false,
   activeSetting: "content",
   previewImg: "",
-  titleSetting: {fontSize: "36px",lineHeight:'38', fontFamily : 'poppins',fontFamilyClass : "ql-font-poppins"},
-  contentSetting: {fontSize: "18px",lineHeight:'20', fontFamily : 'inter',fontFamilyClass : "ql-font-inter"}
+  titleSetting: { fontSize: "36px", lineHeight: '38', fontFamily: 'poppins', fontFamilyClass: "ql-font-poppins" },
+  contentSetting: { fontSize: "18px", lineHeight: '20', fontFamily: 'inter', fontFamilyClass: "ql-font-inter" }
 }
