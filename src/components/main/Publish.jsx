@@ -357,8 +357,9 @@ const Publish = ({ subscriptData }) => {
     try {
       console.time('[Publish] Total Duration');
       console.time('[Publish] 1. Content Preparation');
-      // 1. Prepare Content
-      const content = data?.post?.text?.replace(/<br\s*\/?>/gi, "\n");
+      // 1. Prepare Content - Use getState() to get fresh value from store (avoids stale closure)
+      const freshData = useMainStore.getState().data;
+      const content = freshData?.post?.text?.replace(/<br\s*\/?>/gi, "\n");
       if (!content) {
         errorToaster("Post content cannot be empty.");
         if (schedule) setIsScheduling(false); else setLoading(false);
