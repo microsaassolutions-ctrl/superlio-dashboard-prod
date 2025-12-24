@@ -6,7 +6,7 @@ import { FiTrash2, FiClock, FiRefreshCw, FiChevronUp, FiChevronDown } from "reac
 import ShowMoreText from "react-show-more-text";
 import { format, addMinutes, isWithinInterval, startOfDay, endOfDay } from "date-fns";
 import useUploadStore from "../../store/uploadStore";
-import { setupUploadWarning } from "../../utils/uploadManager";
+import { setupUploadWarning, startBackgroundUpload } from "../../utils/uploadManager";
 
 const MyPost = () => {
     const [posts, setPosts] = useState([]);
@@ -197,28 +197,71 @@ const MyPost = () => {
             // Send as UTC ISO string for timezone consistency
             const utcDateTimeString = localDateTime.toISOString();
 
-            const response = await put(`/linkedin/posts/${selectedPost.id}/reschedule`, {
-                scheduled_at: utcDateTimeString
-            });
+            // Check if this is a failed upload (temporary ID)
+            if (selectedPost.id && typeof selectedPost.id === 'string' && selectedPost.id.startsWith('upload_')) {
+                // Determine logic for RETRY vs RESCHEDULE
+                // Since this modal sets a time, we treat it as scheduling a new post
+                console.log('[MyPost] Retrying failed upload as new schedule:', selectedPost.id);
 
-            if (response?.success) {
-                successToaster("Post rescheduled successfully");
+                if (!selectedPost.originalPostData) {
+                    throw new Error("Missing original post data for retry");
+                }
 
-                // Update local state with UTC string for consistent display
-                setPosts(posts.map(p => {
-                    if (p.id === selectedPost.id) {
-                        return {
-                            ...p,
-                            status: 'scheduled',
-                            scheduled_at: utcDateTimeString
-                        };
-                    }
-                    return p;
-                }));
+                const newPayload = {
+                    ...selectedPost.originalPostData,
+                    scheduled_at: utcDateTimeString,
+                    type: 'schedule' // Ensure type is schedule
+                };
 
+                // token is needed for uploadManager. We can get it from localStorage or store?
+                const token = localStorage.getItem('token');
+
+                if (!token) {
+                    throw new Error("Authentication token not found");
+                }
+
+                // Start NEW upload
+                startBackgroundUpload({
+                    endpoint: '/linkedin/schedule',
+                    payload: newPayload,
+                    token: token,
+                    postData: newPayload
+                });
+
+                // Remove the OLD failed upload from store to prevent duplicates
+                // We need removeUpload from store
+                const removeUpload = useUploadStore.getState().removeUpload;
+                removeUpload(selectedPost.id);
+
+                successToaster("Post retry started");
                 closeRescheduleModal();
+                // No need to setPosts, the new upload will appear automatically via store subscription
+
             } else {
-                errorToaster(response?.message || "Failed to reschedule post");
+                // Standard Reschedule for existing DB posts
+                const response = await put(`/linkedin/posts/${selectedPost.id}/reschedule`, {
+                    scheduled_at: utcDateTimeString
+                });
+
+                if (response?.success) {
+                    successToaster("Post rescheduled successfully");
+
+                    // Update local state with UTC string for consistent display
+                    setPosts(posts.map(p => {
+                        if (p.id === selectedPost.id) {
+                            return {
+                                ...p,
+                                status: 'scheduled',
+                                scheduled_at: utcDateTimeString
+                            };
+                        }
+                        return p;
+                    }));
+
+                    closeRescheduleModal();
+                } else {
+                    errorToaster(response?.message || "Failed to reschedule post");
+                }
             }
         } catch (error) {
             console.error("Reschedule error:", error);
@@ -260,6 +303,8 @@ const MyPost = () => {
         scheduled_at: upload.postData?.scheduled_at || null,
         created_at: new Date().toISOString(),
         isUploading: true,
+        error_message: upload.error, // Pass error message
+        originalPostData: upload.postData, // Keep full data for retry
     }));
 
     const allPosts = [...uploadsAsPost, ...posts];
