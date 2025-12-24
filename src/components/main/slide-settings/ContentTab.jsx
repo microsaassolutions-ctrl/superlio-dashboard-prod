@@ -18,14 +18,14 @@ Size.whitelist = ["10px", "12px", "14px", "16px", "18px", "20px", "22px", "24px"
 Quill.register(Size, true);
 
 // Whitelist for the all font size
-Font.whitelist = [ "antonio", "norwester", "playfair-display", "league-spartan", "league-gothic", "roboto--condensed", "bw-stretch", "cinzel", "bebasneue-regular", "oswald", "anton", 
- "merriweather", "lato", "roboto-slab", "lora", "onest", "urbanist", "biennale", "schabo", "tusker-grotesk", "fiorello-cg", "zuume-rough", "inter",
- "poppins", "dm-sans", "lexend", "switzer", "montserrat-bold", "lato-bold", "raleway", "gilroy", "rosario", "sf-pro", "morganite", "passion-one", "literaturnaya",
- "archivo-black", "helvetica-world", "dm-serif-display", "times-new-roman", "open-sauce", "tt-ramillas", "noto-serif-display", "tt-marxiana-antigua", "cooper-hewitt", "tt-knickerbockers", "tan-harmoni",
- "woodland", "garet", "the-youngest-script", "have-heart-one", "tc-milo", "satoshi", "libre-baskerville", "roboto", "montserrat", "kollektif",
- "open-sans", "helvetica", "product-sans", "arial-nova", "lazydog", "gotham", "garamond", "fredoka", "be-vietnam", "aileron", "tt-hoves",
- "arimo", "public-sans", "a-day-without-sun-text", "the-seasons", "arial", "agrandir", "cormorant-garamond", "arapey", "tt-drugs", "belleza",
- "school-bell", "chewy", "glacial-indifference"
+Font.whitelist = ["antonio", "norwester", "playfair-display", "league-spartan", "league-gothic", "roboto--condensed", "bw-stretch", "cinzel", "bebasneue-regular", "oswald", "anton",
+  "merriweather", "lato", "roboto-slab", "lora", "onest", "urbanist", "biennale", "schabo", "tusker-grotesk", "fiorello-cg", "zuume-rough", "inter",
+  "poppins", "dm-sans", "lexend", "switzer", "montserrat-bold", "lato-bold", "raleway", "gilroy", "rosario", "sf-pro", "morganite", "passion-one", "literaturnaya",
+  "archivo-black", "helvetica-world", "dm-serif-display", "times-new-roman", "open-sauce", "tt-ramillas", "noto-serif-display", "tt-marxiana-antigua", "cooper-hewitt", "tt-knickerbockers", "tan-harmoni",
+  "woodland", "garet", "the-youngest-script", "have-heart-one", "tc-milo", "satoshi", "libre-baskerville", "roboto", "montserrat", "kollektif",
+  "open-sans", "helvetica", "product-sans", "arial-nova", "lazydog", "gotham", "garamond", "fredoka", "be-vietnam", "aileron", "tt-hoves",
+  "arimo", "public-sans", "a-day-without-sun-text", "the-seasons", "arial", "agrandir", "cormorant-garamond", "arapey", "tt-drugs", "belleza",
+  "school-bell", "chewy", "glacial-indifference"
 ];
 
 Quill.register(Font, true);
@@ -33,9 +33,9 @@ Quill.register(Font, true);
 const titleModules = {
   toolbar: [
     ["bold", "italic", "underline"],
-    [{ align: "" },{ align: "center" },{ align: "right" }], //{ align: "justify" }
+    [{ align: "" }, { align: "center" }, { align: "right" }], //{ align: "justify" }
     [{
-      font: [ "antonio", "norwester", "playfair-display", "league-spartan", "league-gothic", "roboto--condensed", "bw-stretch", "cinzel", "bebasneue-regular", "oswald", "anton", 
+      font: ["antonio", "norwester", "playfair-display", "league-spartan", "league-gothic", "roboto--condensed", "bw-stretch", "cinzel", "bebasneue-regular", "oswald", "anton",
         "merriweather", "lato", "roboto-slab", "lora", "onest", "urbanist", "biennale", "schabo", "tusker-grotesk", "fiorello-cg", "zuume-rough", "inter",
         "poppins", "dm-sans", "lexend", "switzer", "montserrat-bold", "lato-bold", "raleway", "gilroy", "rosario", "sf-pro", "morganite", "passion-one", "literaturnaya",
         "archivo-black", "helvetica-world", "dm-serif-display", "times-new-roman", "open-sauce", "tt-ramillas", "noto-serif-display", "tt-marxiana-antigua", "cooper-hewitt", "tt-knickerbockers", "tan-harmoni",
@@ -53,10 +53,10 @@ const titleFormats = ["bold", "italic", "underline", "align", "font", "size"];
 const contentModules = {
   toolbar: [
     ["bold", "italic", "underline"],
-    [{ align: "" },{ align: "center" },{ align: "right" }], //{ align: "justify" }
+    [{ align: "" }, { align: "center" }, { align: "right" }], //{ align: "justify" }
     [{ list: "ordered" }, { list: "bullet" }],
     [{
-      font: [ "antonio", "norwester", "playfair-display", "league-spartan", "league-gothic", "roboto--condensed", "bw-stretch", "cinzel", "bebasneue-regular", "oswald", "anton", 
+      font: ["antonio", "norwester", "playfair-display", "league-spartan", "league-gothic", "roboto--condensed", "bw-stretch", "cinzel", "bebasneue-regular", "oswald", "anton",
         "merriweather", "lato", "roboto-slab", "lora", "onest", "urbanist", "biennale", "schabo", "tusker-grotesk", "fiorello-cg", "zuume-rough", "inter",
         "poppins", "dm-sans", "lexend", "switzer", "montserrat-bold", "lato-bold", "raleway", "gilroy", "rosario", "sf-pro", "morganite", "passion-one", "literaturnaya",
         "archivo-black", "helvetica-world", "dm-serif-display", "times-new-roman", "open-sauce", "tt-ramillas", "noto-serif-display", "tt-marxiana-antigua", "cooper-hewitt", "tt-knickerbockers", "tan-harmoni",
@@ -104,11 +104,11 @@ const ContentTab = () => {
   function formatEditorContent(text = "") {
     return text
       .replace(/\n/g, "<br>")
-      // .replace(/<p>\s*<br>\s*<\/p>/g, "");
+    // .replace(/<p>\s*<br>\s*<\/p>/g, "");
   }
   useEffect(() => {
     if (slide?.text !== editorContent) {
-      setEditorContent(formatEditorContent(slide?.text)|| "");
+      setEditorContent(formatEditorContent(slide?.text) || "");
     }
     if (slide?.title !== editorTitleContent) {
       setEditorTitleContent(formatEditorContent(slide?.title) || "");
@@ -146,7 +146,7 @@ const ContentTab = () => {
         titleEditor.formatText(0, titleEditor.getLength(), {
           size: !slide?.titleSetting?.fontSize ? '36px' : slide?.titleSetting?.fontSize,
           bold: true,
-          font : !slide?.titleSetting?.fontFamily ? 'poppins' : slide?.titleSetting?.fontFamily
+          font: !slide?.titleSetting?.fontFamily ? 'poppins' : slide?.titleSetting?.fontFamily
         });
         const elText = document.querySelector('div.mainContents .mainContentst.mainContentTitle');
         if (elText) {
@@ -162,7 +162,7 @@ const ContentTab = () => {
         contentEditor.focus();
         contentEditor.formatText(0, contentEditor.getLength(), {
           size: !slide?.contentSetting?.fontSize ? "18px" : slide?.contentSetting?.fontSize,
-          font : !slide?.contentSetting?.fontFamily ? 'inter' : slide?.contentSetting?.fontFamily
+          font: !slide?.contentSetting?.fontFamily ? 'inter' : slide?.contentSetting?.fontFamily
         });
         const elText = document.querySelector('div.mainContents .mainContentsp.mainContentText');
         if (elText) {
@@ -181,7 +181,7 @@ const ContentTab = () => {
 
   // Efficient Input Change Handler
   const handleInputChange = (key, value) => {
-    if(isCarouselBusy) return
+    if (isCarouselBusy) return
     const slideIndex = data.carousels.findIndex((s) => s.id === slide?.id);
     if (slide && slide[key] !== value) {
       setData(`carousels.${slideIndex}.${key}`, value);
@@ -200,12 +200,12 @@ const ContentTab = () => {
           if (elText) {
             if (size) elText.style.lineHeight = `${getLineHeight(size)}px`;
           }
-          if (size) {
-            setData(`carousels.${slideIndex}.titleSetting`, { 
-              fontSize: size, 
-              lineHeight: getLineHeight(size),
-              fontFamily : fontFamily,
-              fontFamilyClass : `ql-font-${fontFamily}`
+          if (size || fontFamily) {
+            setData(`carousels.${slideIndex}.titleSetting`, {
+              fontSize: size || slide?.titleSetting?.fontSize || '36px',
+              lineHeight: getLineHeight(size || slide?.titleSetting?.fontSize || '36px'),
+              fontFamily: fontFamily || slide?.titleSetting?.fontFamily || 'poppins',
+              fontFamilyClass: `ql-font-${fontFamily || slide?.titleSetting?.fontFamily || 'poppins'}`
             });
           }
         }
@@ -224,8 +224,8 @@ const ContentTab = () => {
           if (elText) {
             if (size) elText.style.lineHeight = `${getLineHeight(size)}px`;
           }
-          if (size) {
-            setData(`carousels.${slideIndex}.contentSetting`, { fontSize: size ,lineHeight: getLineHeight(size),fontFamily : fontFamily, fontFamilyClass:`ql-font-${fontFamily}`});
+          if (size || fontFamily) {
+            setData(`carousels.${slideIndex}.contentSetting`, { fontSize: size || slide?.contentSetting?.fontSize || '18px', lineHeight: getLineHeight(size || slide?.contentSetting?.fontSize || '18px'), fontFamily: fontFamily || slide?.contentSetting?.fontFamily || 'inter', fontFamilyClass: `ql-font-${fontFamily || slide?.contentSetting?.fontFamily || 'inter'}` });
           }
         }
       }
@@ -247,17 +247,18 @@ const ContentTab = () => {
   const settings = useMainStore((state) => state.data.carousels[activeIndex]);
 
   useEffect(() => {
-    if(isCarouselBusy) return
+    if (isCarouselBusy) return
     const interval = setInterval(() => {
       if (!quillTitleRef.current || !quillRef?.current) return;
       const titleEditor = quillTitleRef?.current?.getEditor?.();
       const contentEditor = quillRef?.current?.getEditor?.();
       if (!contentEditor && !titleEditor) return;
       if (titleEditor && contentEditor) {
-        if(titleEditor.getLength() > 1){
+        if (titleEditor.getLength() > 1) {
           titleEditor.formatText(0, titleEditor.getLength(), {
-          size: !slide?.titleSetting?.fontSize ? '36px' : slide?.titleSetting?.fontSize,
-          font : !slide?.titleSetting?.fontFamily ? 'poppins' : slide?.titleSetting?.fontFamily});
+            size: !slide?.titleSetting?.fontSize ? '36px' : slide?.titleSetting?.fontSize,
+            font: !slide?.titleSetting?.fontFamily ? 'poppins' : slide?.titleSetting?.fontFamily
+          });
           titleEditor.focus();
           const editorOuter = document.querySelector('.mainContentsp.mainContentst.mainContentTitle');
           editorOuter.style.fontSize = `${slide?.titleSetting?.fontSize} !important`;
@@ -265,8 +266,9 @@ const ContentTab = () => {
         }
         if (contentEditor.getLength() > 1) {
           contentEditor.formatText(0, contentEditor.getLength(), {
-          size: !slide?.contentSetting?.fontSize ? '18px' : slide?.contentSetting?.fontSize,
-          font : !slide?.contentSetting?.fontFamily ? 'inter' : slide?.contentSetting?.fontFamily});
+            size: !slide?.contentSetting?.fontSize ? '18px' : slide?.contentSetting?.fontSize,
+            font: !slide?.contentSetting?.fontFamily ? 'inter' : slide?.contentSetting?.fontFamily
+          });
           contentEditor.focus();
           const editorOuter = document.querySelector('.mainContentsp.mainContentsc.mainContentText');
           editorOuter.style.fontSize = `${slide?.contentSetting?.fontSize} !important`;
