@@ -131,6 +131,11 @@ const MyPost = () => {
             baseTime = addMinutes(new Date(), 2);
         }
 
+        // If the scheduled time is in the past, default to now + 2 minutes
+        if (baseTime < new Date()) {
+            baseTime = addMinutes(new Date(), 2);
+        }
+
         setScheduleDate(format(baseTime, "yyyy-MM-dd"));
 
         let h = baseTime.getHours();
