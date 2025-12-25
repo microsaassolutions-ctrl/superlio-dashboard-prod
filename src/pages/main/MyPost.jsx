@@ -10,6 +10,7 @@ import useUploadStore from "../../store/uploadStore";
 import { setupUploadWarning, startBackgroundUpload } from "../../utils/uploadManager";
 
 const MyPost = () => {
+    console.log('[MyPost] v2.0 - Component loaded with getCookieValue and 60s polling');
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("All");
