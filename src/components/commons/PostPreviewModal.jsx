@@ -14,6 +14,7 @@ import { get } from "../../api/apiService";
  * For SCHEDULED/PROCESSING posts: Shows local content preview with media
  */
 const PostPreviewModal = ({ post: initialPost, onClose }) => {
+    console.log('[PostPreviewModal] v2.0 - Component loaded with polling and upload progress');
     const [embedLoading, setEmbedLoading] = useState(true);
     const [embedError, setEmbedError] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
