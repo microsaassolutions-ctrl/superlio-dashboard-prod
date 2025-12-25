@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { get, deleteReq, put } from "../../api/apiService";
 import { errorToaster, successToaster } from "../../utils/toaster";
-import { Loading, Overlay, DateRangeFilter } from "../../components/commons";
+import { getCookieValue } from "../../utils/helpers";
+import { Loading, Overlay, DateRangeFilter, PostPreviewModal } from "../../components/commons";
 import { FiTrash2, FiClock, FiRefreshCw, FiChevronUp, FiChevronDown } from "react-icons/fi";
 import ShowMoreText from "react-show-more-text";
 import { format, addMinutes, isWithinInterval, startOfDay, endOfDay } from "date-fns";
@@ -69,7 +70,7 @@ const MyPost = () => {
             return; // No polling needed
         }
 
-        console.log('[MyPost] Starting smart polling (120s interval) - uploading/processing posts detected');
+        console.log('[MyPost] Starting smart polling (60s interval) - uploading/processing posts detected');
 
         const pollInterval = setInterval(() => {
             if (needsPolling()) {
@@ -79,7 +80,7 @@ const MyPost = () => {
                 console.log('[MyPost] All uploads/processing complete - stopping poll');
                 clearInterval(pollInterval);
             }
-        }, 120000); // 120 seconds
+        }, 60000); // 60 seconds
 
         return () => {
             console.log('[MyPost] Cleaning up poll interval');
@@ -218,8 +219,8 @@ const MyPost = () => {
                     type: 'schedule' // Ensure type is schedule
                 };
 
-                // token is needed for uploadManager. We can get it from localStorage or store?
-                const token = localStorage.getItem('token');
+                // token is needed for uploadManager - get from cookie
+                const token = getCookieValue('superlio_token');
 
                 if (!token) {
                     throw new Error("Authentication token not found");

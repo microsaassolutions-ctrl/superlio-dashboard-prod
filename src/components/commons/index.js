@@ -19,5 +19,6 @@ import DateRangeFilter from "./DateRangeFilter.jsx";
 import PdfPreview from "./PdfPreview.jsx";
 import UploadMediaModal from "./UploadMediaModal.jsx";
 import RatingModal from "./RatingModal.jsx";
+import PostPreviewModal from "./PostPreviewModal.jsx";
 
-export { Header, Footer, Input, Button, Checkbox, BoxComponent, ColorPicker, ColorPallete, ImageComponent, Loading, SideBar, RegenerationReason, ImageCarousel, ScrollTop, Overlay, ScheduleCard, Shimmer, DateRangeFilter, PdfPreview, UploadMediaModal, RatingModal };
+export { Header, Footer, Input, Button, Checkbox, BoxComponent, ColorPicker, ColorPallete, ImageComponent, Loading, SideBar, RegenerationReason, ImageCarousel, ScrollTop, Overlay, ScheduleCard, Shimmer, DateRangeFilter, PdfPreview, UploadMediaModal, RatingModal, PostPreviewModal };
