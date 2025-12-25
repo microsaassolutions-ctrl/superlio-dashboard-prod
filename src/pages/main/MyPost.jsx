@@ -25,6 +25,7 @@ const MyPost = () => {
     // Modal states
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
+    const [previewModalOpen, setPreviewModalOpen] = useState(false);
     const [selectedPost, setSelectedPost] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isRescheduling, setIsRescheduling] = useState(false);
@@ -520,7 +521,16 @@ const MyPost = () => {
                                 const status = getStatus(post);
                                 const firstLine = post.content ? post.content.split('\n')[0] : "";
                                 return (
-                                    <tr key={post.id} className="hover:bg-gray-50 transition">
+                                    <tr
+                                        key={post.id}
+                                        className="hover:bg-gray-50 transition cursor-pointer"
+                                        onClick={(e) => {
+                                            // Don't open preview if clicking on action buttons
+                                            if (e.target.closest('button')) return;
+                                            setSelectedPost(post);
+                                            setPreviewModalOpen(true);
+                                        }}
+                                    >
                                         <td className="px-6 py-4 border-r border-gray-200">
                                             <div className="text-sm text-gray-900 font-medium">
                                                 <ShowMoreText
@@ -802,6 +812,17 @@ const MyPost = () => {
                         </div>
                     </div>
                 </Overlay>
+            )}
+
+            {/* Post Preview Modal */}
+            {previewModalOpen && selectedPost && (
+                <PostPreviewModal
+                    post={selectedPost}
+                    onClose={() => {
+                        setPreviewModalOpen(false);
+                        setSelectedPost(null);
+                    }}
+                />
             )}
         </div>
     );
